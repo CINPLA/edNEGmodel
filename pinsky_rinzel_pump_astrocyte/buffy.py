@@ -108,29 +108,62 @@ class Buffy():
         self.g_Ca = 118.
         self.g_AHP = 8.
         self.g_C = 150.
+        
+        # pump strengths
+        self.rho = 1.87e-6
+        self.U_kcc2 = 7.00e-7
+        self.U_nkcc1 = 2.33e-7
+
+
+
+    def j_pump(self, Na_i, K_e):
+        j = (self.rho / (1.0 + np.exp((25. - Na_i)/3.))) * (1.0 / (1.0 + np.exp(3.5 - K_e)))
+        return j
+
+    def j_kcc2(self, K_i, K_e, Cl_i, Cl_e):
+        j = self.U_kcc2 * np.log(K_i*Cl_i/(K_e*Cl_e))
+        return j
+    
+    def j_nkcc1(self, Na_i, Na_e, K_i, K_e, Cl_i, Cl_e):
+        j = self.U_nkcc1 * (1 / (1 + np.exp(16 - K_e))) * (np.log(K_i*Cl_i/(K_e*Cl_e)) + np.log(Na_i*Cl_i/(Na_e*Cl_e)))
+        return j
 
     def j_Na_sn(self, phi_sm, E_Na_s):
-        j = self.g_Na_leak*(phi_sm - E_Na_s) / (self.F*self.Z_Na)
+        j = self.g_Na_leak*(phi_sm - E_Na_s) / (self.F*self.Z_Na) \
+            + 3*self.j_pump(self.Na_si, self.K_se) \
+            + self.j_nkcc1(self.Na_si, self.Na_se, self.K_si, self.K_se, self.Cl_si, self.Cl_se)        
         return j 
 
     def j_K_sn(self, phi_sm, E_K_s):
-        j = self.g_K_leak*(phi_sm - E_K_s) / (self.F*self.Z_K)
+        j = self.g_K_leak*(phi_sm - E_K_s) / (self.F*self.Z_K) \
+            - 2*self.j_pump(self.Na_si, self.K_se) \
+            + self.j_kcc2(self.K_si, self.K_se, self.Cl_si, self.Cl_se) \
+            + self.j_nkcc1(self.Na_si, self.Na_se, self.K_si, self.K_se, self.Cl_si, self.Cl_se)        
         return j
 
     def j_Cl_sn(self, phi_sm, E_Cl_s):
-        j = self.g_Cl_leak*(phi_sm - E_Cl_s) / (self.F*self.Z_Cl)
+        j = self.g_Cl_leak*(phi_sm - E_Cl_s) / (self.F*self.Z_Cl) \
+            + self.j_kcc2(self.K_si, self.K_se, self.Cl_si, self.Cl_se) \
+            + 2*self.j_nkcc1(self.Na_si, self.Na_se, self.K_si, self.K_se, self.Cl_si, self.Cl_se)
         return j
 
     def j_Na_dn(self, phi_dm, E_Na_d):
-        j = self.g_Na_leak*(phi_dm - E_Na_d) / (self.F*self.Z_Na) 
+        j = self.g_Na_leak*(phi_dm - E_Na_d) / (self.F*self.Z_Na) \
+            + 3*self.j_pump(self.Na_di, self.K_de) \
+            + self.j_nkcc1(self.Na_di, self.Na_de, self.K_di, self.K_de, self.Cl_di, self.Cl_de)
         return j
 
     def j_K_dn(self, phi_dm, E_K_d):
-        j = self.g_K_leak*(phi_dm - E_K_d) / (self.F*self.Z_K) 
+        j = self.g_K_leak*(phi_dm - E_K_d) / (self.F*self.Z_K) \
+            - 2*self.j_pump(self.Na_di, self.K_de) \
+            + self.j_kcc2(self.K_di, self.K_de, self.Cl_di, self.Cl_de) \
+            + self.j_nkcc1(self.Na_di, self.Na_de, self.K_di, self.K_de, self.Cl_di, self.Cl_de)
         return j
 
     def j_Cl_dn(self, phi_dm, E_Cl_d):
-        j = self.g_Cl_leak*(phi_dm - E_Cl_d) / (self.F*self.Z_Cl) 
+        j = self.g_Cl_leak*(phi_dm - E_Cl_d) / (self.F*self.Z_Cl) \
+            + self.j_kcc2(self.K_di, self.K_de, self.Cl_di, self.Cl_de) \
+            + 2*self.j_nkcc1(self.Na_di, self.Na_de, self.K_di, self.K_de, self.Cl_di, self.Cl_de)
         return j
 
     def j_k_diff(self, D_k, tortuosity, k_s, k_d):
@@ -385,7 +418,7 @@ if __name__ == "__main__":
             dndt, dhdt, dsdt, dcdt, dqdt, dzdt 
 
     start_time = time.time()
-    t_span = (0, 0.5)
+    t_span = (0, 30)
 
     k0 = [Na_si0, Na_se0, Na_sg0, Na_di0, Na_de0, Na_dg0, K_si0, K_se0, K_sg0, K_di0, K_de0, K_dg0, Cl_si0, Cl_se0, Cl_sg0, Cl_di0, Cl_de0, Cl_dg0, Ca_si0, Ca_se0, Ca_di0, Ca_de0, n0, h0, s0, c0, q0, z0]
 
