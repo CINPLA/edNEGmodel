@@ -299,6 +299,18 @@ class Buffy():
         return dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, \
             dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de
 
+        def dmdt(self):
+            phi_si, phi_se, phi_sg, phi_di, phi_de, phi_dg, phi_msn, phi_mdn, phi_msg, phi_mdg  = self.membrane_potentials()
+            
+            dndt = 0
+            dhdt = 0
+            dsdt = 0
+            dcdt = 0
+            dqdt = 0
+            dzdt = 0
+
+            return dndt, dhdt, dsdt, dcdt, dqdt, dzdt
+
 if __name__ == "__main__":
 
     T = 309.14
@@ -352,31 +364,33 @@ if __name__ == "__main__":
     k_res_de = Cl_de0 - Na_de0 - K_de0 - 2*Ca_de0 - res_e
     k_res_dg = Cl_dg0 - Na_dg0 - K_dg0
 
-    n = 0.0004
-    h = 0.999
-    s = 0.008
-    c = 0.006
-    q = 0.011
-    z = 1.0    
+    n0 = 0.0004
+    h0 = 0.999
+    s0 = 0.008
+    c0 = 0.006
+    q0 = 0.011
+    z0 = 1.0    
 
     def dkdt(t,k):
 
-        Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de = k
+        Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, n, h, s, c, q, z = k
 
         my_cell = Buffy(T, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, Ca_si0, Ca_di0, n, h, s, c, q, z)
 
         dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de = my_cell.dkdt()
+        dndt, dhdt, dsdt, dcdt, dqdt, dzdt = my_cell.dmdt()
 
         return dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, \
-            dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de
+            dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de, \
+            dndt, dhdt, dsdt, dcdt, dqdt, dzdt 
 
     start_time = time.time()
-    t_span = (0, 10)
+    t_span = (0, 0.5)
 
-    k0 = [Na_si0, Na_se0, Na_sg0, Na_di0, Na_de0, Na_dg0, K_si0, K_se0, K_sg0, K_di0, K_de0, K_dg0, Cl_si0, Cl_se0, Cl_sg0, Cl_di0, Cl_de0, Cl_dg0, Ca_si0, Ca_se0, Ca_di0, Ca_de0]
+    k0 = [Na_si0, Na_se0, Na_sg0, Na_di0, Na_de0, Na_dg0, K_si0, K_se0, K_sg0, K_di0, K_de0, K_dg0, Cl_si0, Cl_se0, Cl_sg0, Cl_di0, Cl_de0, Cl_dg0, Ca_si0, Ca_se0, Ca_di0, Ca_de0, n0, h0, s0, c0, q0, z0]
 
     init_cell = Buffy(T, Na_si0, Na_se0, Na_sg0, Na_di0, Na_de0, Na_dg0, K_si0, K_se0, K_sg0, K_di0, K_de0, K_dg0, Cl_si0, Cl_se0, Cl_sg0, Cl_di0, Cl_de0, Cl_dg0, \
-        Ca_si0, Ca_se0, Ca_di0, Ca_de0, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, Ca_si0, Ca_di0, n, h, s, c, q, z)
+        Ca_si0, Ca_se0, Ca_di0, Ca_de0, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, Ca_si0, Ca_di0, n0, h0, s0, c0, q0, z0)
 
     phi_si, phi_se, phi_sg, phi_di, phi_de, phi_dg, phi_msn, phi_mdn, phi_msg, phi_mdg = init_cell.membrane_potentials()
     
@@ -418,7 +432,7 @@ if __name__ == "__main__":
 
     sol = solve_ivp(dkdt, t_span, k0, max_step=1e-4)
 
-    Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de  = sol.y
+    Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, n, h, s, c, q, z  = sol.y
     t = sol.t
 
     my_cell = Buffy(T, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, \
@@ -512,3 +526,4 @@ if __name__ == "__main__":
     plt.xlabel('time [s]')
     plt.legend(loc='upper right')
     plt.show()
+
