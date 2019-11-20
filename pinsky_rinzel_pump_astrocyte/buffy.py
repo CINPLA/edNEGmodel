@@ -4,6 +4,8 @@ from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 import time
 import warnings
+from somatic_injection_current import *
+
 #warnings.filterwarnings("error")
 
 class Buffy(): 
@@ -114,7 +116,87 @@ class Buffy():
         self.U_kcc2 = 7.00e-7
         self.U_nkcc1 = 2.33e-7
 
+    def alpha_m(self, phi_sm):
+        phi_1 = phi_sm*1e3 + 46.9
+        alpha = - 0.32 * phi_1 / (np.exp(-phi_1 / 4) - 1.)
+        alpha = alpha*1e3
+        return alpha
 
+    def beta_m(self, phi_sm):
+        phi_2 = phi_sm*1e3 + 19.9
+        beta = 0.28 * phi_2 / (np.exp(phi_2 / 5.) - 1.)
+        beta = beta*1e3
+        return beta
+
+    def alpha_h(self, phi_sm):
+        alpha = 0.128 * np.exp((-43. - phi_sm*1e3) / 18.)
+        alpha = alpha*1e3
+        return alpha
+
+    def beta_h(self, phi_sm):
+        phi_5 = phi_sm*1e3 + 20.
+        beta = 4. / (1 + np.exp(-phi_5 / 5.))
+        beta = beta*1e3
+        return beta
+
+    def alpha_n(self, phi_sm):
+        phi_3 = phi_sm*1e3 + 24.9
+        alpha = - 0.016 * phi_3 / (np.exp(-phi_3 / 5.) - 1)
+        alpha = alpha*1e3
+        return alpha
+
+    def beta_n(self, phi_sm):
+        phi_4 = phi_sm*1e3 + 40.
+        beta = 0.25 * np.exp(-phi_4 / 40.)
+        beta = beta*1e3
+        return beta
+
+    def alpha_s(self, phi_dm):
+        alpha = 1.6 / (1 + np.exp(-0.072 * (phi_dm*1000 - 5.)))
+        alpha = alpha*1000
+        return alpha
+
+    def beta_s(self, phi_dm):
+        phi_6 = phi_dm*1000 + 8.9
+        beta = 0.02 * phi_6 / (np.exp(phi_6 / 5.) - 1.)
+        beta = beta*1000
+        return beta
+
+    def alpha_c(self, phi_dm):
+        phi_7 = phi_dm*1e3 + 53.5
+        phi_8 = phi_dm*1e3 + 50.0
+        if phi_dm*1e3 <= -10:
+            alpha = 0.0527 * np.exp(phi_8/11.- phi_7/27.)
+        else:
+            alpha = 2 * np.exp(-phi_7 / 27.)
+        alpha = alpha*1e3
+        return alpha
+
+    def beta_c(self, phi_dm):
+        phi_7 = phi_dm*1e3 + 53.5
+        if phi_dm*1e3 <= -10:
+            beta = 2. * np.exp(-phi_7 / 27.) - self.alpha_c(phi_dm)/1e3
+        else:
+            beta = 0.
+        beta = beta*1e3
+        return beta
+
+    def chi(self):
+        return min((self.free_Ca_di-99.8e-6)/2.5e-4, 1.0)
+
+    def alpha_q(self):
+        return min(2e4*(self.free_Ca_di-99.8e-6), 10.0) 
+
+    def beta_q(self):
+        return 1.0
+
+    def m_inf(self, phi_sm):
+        return self.alpha_m(phi_sm) / (self.alpha_m(phi_sm) + self.beta_m(phi_sm))
+
+    def z_inf(self, phi_dm):
+        phi_half = -30
+        k = 1
+        return 1/(1 + np.exp((phi_dm*1000 - phi_half)/k))
 
     def j_pump(self, Na_i, K_e):
         j = (self.rho / (1.0 + np.exp((25. - Na_i)/3.))) * (1.0 / (1.0 + np.exp(3.5 - K_e)))
@@ -131,14 +213,16 @@ class Buffy():
     def j_Na_sn(self, phi_sm, E_Na_s):
         j = self.g_Na_leak*(phi_sm - E_Na_s) / (self.F*self.Z_Na) \
             + 3*self.j_pump(self.Na_si, self.K_se) \
-            + self.j_nkcc1(self.Na_si, self.Na_se, self.K_si, self.K_se, self.Cl_si, self.Cl_se)        
+            + self.j_nkcc1(self.Na_si, self.Na_se, self.K_si, self.K_se, self.Cl_si, self.Cl_se) \
+            + self.g_Na * self.m_inf(phi_sm)**2 * self.h * (phi_sm - E_Na_s) / (self.F*self.Z_Na)
         return j 
 
     def j_K_sn(self, phi_sm, E_K_s):
         j = self.g_K_leak*(phi_sm - E_K_s) / (self.F*self.Z_K) \
             - 2*self.j_pump(self.Na_si, self.K_se) \
             + self.j_kcc2(self.K_si, self.K_se, self.Cl_si, self.Cl_se) \
-            + self.j_nkcc1(self.Na_si, self.Na_se, self.K_si, self.K_se, self.Cl_si, self.Cl_se)        
+            + self.j_nkcc1(self.Na_si, self.Na_se, self.K_si, self.K_se, self.Cl_si, self.Cl_se) \
+            + self.g_DR * self.n * (phi_sm - E_K_s) / (self.F*self.Z_K)
         return j
 
     def j_Cl_sn(self, phi_sm, E_Cl_s):
@@ -157,13 +241,19 @@ class Buffy():
         j = self.g_K_leak*(phi_dm - E_K_d) / (self.F*self.Z_K) \
             - 2*self.j_pump(self.Na_di, self.K_de) \
             + self.j_kcc2(self.K_di, self.K_de, self.Cl_di, self.Cl_de) \
-            + self.j_nkcc1(self.Na_di, self.Na_de, self.K_di, self.K_de, self.Cl_di, self.Cl_de)
+            + self.j_nkcc1(self.Na_di, self.Na_de, self.K_di, self.K_de, self.Cl_di, self.Cl_de) \
+            + self.g_AHP * self.q * (phi_dm - E_K_d) / (self.F*self.Z_K) \
+            + self.g_C * self.c * self.chi() * (phi_dm - E_K_d) / (self.F*self.Z_K)
         return j
 
     def j_Cl_dn(self, phi_dm, E_Cl_d):
         j = self.g_Cl_leak*(phi_dm - E_Cl_d) / (self.F*self.Z_Cl) \
             + self.j_kcc2(self.K_di, self.K_de, self.Cl_di, self.Cl_de) \
             + 2*self.j_nkcc1(self.Na_di, self.Na_de, self.K_di, self.K_de, self.Cl_di, self.Cl_de)
+        return j
+
+    def j_Ca_dn(self, phi_dm, E_Ca_d):
+        j = self.g_Ca * self.s**2 * self.z * (phi_dm - E_Ca_d) / (self.F*self.Z_Ca)
         return j
 
     def j_k_diff(self, D_k, tortuosity, k_s, k_d):
@@ -257,6 +347,9 @@ class Buffy():
         phi_si, phi_se, phi_sg, phi_di, phi_de, phi_dg, phi_msn, phi_mdn, phi_msg, phi_mdg  = self.membrane_potentials()
         E_Na_sn, E_Na_sg, E_Na_dn, E_Na_dg, E_K_sn, E_K_sg, E_K_dn, E_K_dg, E_Cl_sn, E_Cl_sg, E_Cl_dn, E_Cl_dg, E_Ca_sn, E_Ca_dn = self.reversal_potentials()
 
+        V_fr_s = self.V_si/self.V_se
+        V_fr_d = self.V_di/self.V_de 
+
         j_Na_msn = self.j_Na_sn(phi_msn, E_Na_sn)
         j_K_msn = self.j_K_sn(phi_msn, E_K_sn)
         j_Cl_msn = self.j_Cl_sn(phi_msn, E_Cl_sn)
@@ -272,6 +365,8 @@ class Buffy():
         j_Na_mdg = 0 #self.j_Na_d(phi_mdg, E_Na_dg)
         j_K_mdg = 0 #self.j_K_d(phi_mdg, E_K_dg)
         j_Cl_mdg = 0 #self.j_Cl_d(phi_mdg, E_Cl_dg)
+
+        j_Ca_mdn = self.j_Ca_dn(phi_mdn, E_Ca_dn)
 
         j_Na_in = self.j_k_diff(self.D_Na, self.lamda_i, self.Na_si, self.Na_di) \
             + self.j_k_drift(self.D_Na, self.Z_Na, self.lamda_i, self.Na_si, self.Na_di, phi_si, phi_di) 
@@ -298,11 +393,11 @@ class Buffy():
         j_Ca_e = self.j_k_diff(self.D_Ca, self.lamda_e, self.Ca_se, self.Ca_de) \
             + self.j_k_drift(self.D_Ca, self.Z_Ca, self.lamda_e, self.Ca_se, self.Ca_de, phi_se, phi_de)
 
-        dNadt_si = -j_Na_msn*(self.A_sn / self.V_si) - j_Na_in*(self.A_in / self.V_si)
-        dNadt_se = j_Na_msn*(self.A_sn / self.V_se) + j_Na_msg*(self.A_sg / self.V_se) - j_Na_e*(self.A_e / self.V_se)
+        dNadt_si = -j_Na_msn*(self.A_sn / self.V_si) - j_Na_in*(self.A_in / self.V_si) + 2*75.*(self.Ca_si - self.Ca0_si)
+        dNadt_se = j_Na_msn*(self.A_sn / self.V_se) + j_Na_msg*(self.A_sg / self.V_se) - j_Na_e*(self.A_e / self.V_se) - 2*75.*V_fr_s*(self.Ca_si - self.Ca0_si)
         dNadt_sg = -j_Na_msg*(self.A_sg / self.V_sg) - j_Na_ig*(self.A_ig / self.V_sg)
-        dNadt_di = -j_Na_mdn*(self.A_dn / self.V_di) + j_Na_in*(self.A_in / self.V_di)
-        dNadt_de = j_Na_mdn*(self.A_dn / self.V_de) + j_Na_mdg*(self.A_dg / self.V_de) + j_Na_e*(self.A_e / self.V_de)
+        dNadt_di = -j_Na_mdn*(self.A_dn / self.V_di) + j_Na_in*(self.A_in / self.V_di) + 2*75.*(self.Ca_di - self.Ca0_di)
+        dNadt_de = j_Na_mdn*(self.A_dn / self.V_de) + j_Na_mdg*(self.A_dg / self.V_de) + j_Na_e*(self.A_e / self.V_de) - 2*75.*V_fr_d*(self.Ca_di - self.Ca0_di)
         dNadt_dg = -j_Na_mdg*(self.A_dg / self.V_dg) + j_Na_ig*(self.A_ig / self.V_dg)
 
         dKdt_si = -j_K_msn*(self.A_sn / self.V_si) - j_K_in*(self.A_in / self.V_si)
@@ -319,10 +414,10 @@ class Buffy():
         dCldt_de = j_Cl_mdn*(self.A_dn / self.V_de) + j_Cl_mdg*(self.A_dg / self.V_de) + j_Cl_e*(self.A_e / self.V_de)
         dCldt_dg = -j_Cl_mdg*(self.A_dg / self.V_dg) + j_Cl_ig*(self.A_ig / self.V_dg)
 
-        dCadt_si = - j_Ca_in*(self.A_in / self.V_si)
-        dCadt_se = - j_Ca_e*(self.A_e / self.V_se)
-        dCadt_di = j_Ca_in*(self.A_in / self.V_di)
-        dCadt_de = j_Ca_e*(self.A_e / self.V_de)
+        dCadt_si = - j_Ca_in*(self.A_in / self.V_si) - 75.*(self.Ca_si - self.Ca0_si)
+        dCadt_se = - j_Ca_e*(self.A_e / self.V_se) + V_fr_s*75.*(self.Ca_si - self.Ca0_si)
+        dCadt_di = j_Ca_in*(self.A_in / self.V_di) - j_Ca_mdn*(self.A_dn / self.V_di) - 75.*(self.Ca_di - self.Ca0_di)
+        dCadt_de = j_Ca_e*(self.A_e / self.V_de) + j_Ca_mdn*(self.A_dn / self.V_de) + V_fr_d*75.*(self.Ca_di - self.Ca0_di)
 
 #        dresdt_si = 0
 #        dresdt_di = 0
@@ -335,19 +430,18 @@ class Buffy():
     def dmdt(self):
         phi_si, phi_se, phi_sg, phi_di, phi_de, phi_dg, phi_msn, phi_mdn, phi_msg, phi_mdg  = self.membrane_potentials()
         
-        dndt = 0
-        dhdt = 0
-        dsdt = 0
-        dcdt = 0
-        dqdt = 0
-        dzdt = 0
-
+        dndt = self.alpha_n(phi_msn)*(1.0-self.n) - self.beta_n(phi_msn)*self.n
+        dhdt = self.alpha_h(phi_msn)*(1.0-self.h) - self.beta_h(phi_msn)*self.h 
+        dsdt = self.alpha_s(phi_mdn)*(1.0-self.s) - self.beta_s(phi_mdn)*self.s
+        dcdt = self.alpha_c(phi_mdn)*(1.0-self.c) - self.beta_c(phi_mdn)*self.c
+        dqdt = self.alpha_q()*(1.0-self.q) - self.beta_q()*self.q
+        dzdt = (self.z_inf(phi_mdn) - self.z)
+        
         return dndt, dhdt, dsdt, dcdt, dqdt, dzdt
 
 if __name__ == "__main__":
 
     T = 309.14
-    alpha = 1.
 
     Na_si0 = 18.
     Na_se0 = 139.
@@ -361,11 +455,11 @@ if __name__ == "__main__":
     Ca_si0 = 0.01
     Ca_se0 = 1.1
 
-    Na_di0 = 20.
-    Na_de0 = 141.
+    Na_di0 = 18.
+    Na_de0 = 139.
     Na_dg0 = 0.
-    K_di0 = 96.
-    K_de0 = 4.
+    K_di0 = 99.
+    K_de0 = 5.
     K_dg0 = 0.
     Cl_di0 = 7.
     Cl_de0 = 131.
@@ -404,6 +498,9 @@ if __name__ == "__main__":
     q0 = 0.011
     z0 = 1.0    
 
+    I_stim = 30e-12 # [A]
+    alpha = 0.4
+    
     def dkdt(t,k):
 
         Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, n, h, s, c, q, z = k
@@ -413,12 +510,15 @@ if __name__ == "__main__":
         dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de = my_cell.dkdt()
         dndt, dhdt, dsdt, dcdt, dqdt, dzdt = my_cell.dmdt()
 
+        if t > 10:
+            dKdt_si, dKdt_se = somatic_injection_current(my_cell, dKdt_si, dKdt_se, 1.0, I_stim)
+
         return dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, \
             dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de, \
             dndt, dhdt, dsdt, dcdt, dqdt, dzdt 
 
     start_time = time.time()
-    t_span = (0, 30)
+    t_span = (0, 20)
 
     k0 = [Na_si0, Na_se0, Na_sg0, Na_di0, Na_de0, Na_dg0, K_si0, K_se0, K_sg0, K_di0, K_de0, K_dg0, Cl_si0, Cl_se0, Cl_sg0, Cl_di0, Cl_de0, Cl_dg0, Ca_si0, Ca_se0, Ca_di0, Ca_de0, n0, h0, s0, c0, q0, z0]
 
