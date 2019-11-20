@@ -7,31 +7,11 @@ import warnings
 warnings.filterwarnings("error")
 
 class Buffy(): 
-    """A two plus two compartment neuron model with Na+, K+, and Cl- leak currents.
-
-    Methods
-    -------
-    constructor(T, Na_si, Na_se, Na_di, Na_de, K_si, K_se, K_di, K_de, Cl_si, Cl_se, Cl_di, Cl_de, \
-        Ca_si, Ca_se, Ca_di, Ca_de, k_res_si, k_res_se, k_res_di, k_res_de, alpha)
-    j_Na_s(phi_sm, E_Na_s): compute the Na+ flux across the somatic membrane
-    j_K_s(phi_sm, E_K_s): compute the K+ flux across the somatic membrane
-    j_Cl_s(phi_sm, E_Cl_s): compute the Cl- flux across the somatic membrane
-    j_Na_d(phi_dm, E_Na_d): compute the Na+ flux across the dendritic membrane
-    j_K_d(phi_dm, E_K_d): compute the K+ flux across the dendritic membrane
-    j_Cl_d(phi_dm, E_Cl_d): compute the Cl- flux across the dendritic membrane
-    j_k_diff(D_k, tortuosity, k_s, k_d): compute the axial diffusion flux of ion k
-    j_k_drift(D_k, Z_k, tortuosity, k_s, k_d, phi_s, phi_d): compute the axial drift flux of ion k
-    conductivity_k(D_k, Z_k, tortuosity, k_s, k_d): compute axial conductivity of ion k
-    total_charge(k, k_res, V): calculate the total charge within volume V
-    nernst_potential(Z, k_i, k_e): calculate the reversal potential of ion k
-    reversal_potentials(): calculate the reversal potentials of all ion species
-    membrane_potentials(): calculate the membrane potentials
-    dkdt(): calculate dk/dt for all ion species k
-    """
 
     def __init__(self, T, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, \
         Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, \
-        k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha):
+        k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, \
+        Ca0_si, Ca0_di, n, h, s, c, q, z):
         
         # temperature [K]
         self.T = T
@@ -65,21 +45,29 @@ class Buffy():
         self.k_res_di = k_res_di
         self.k_res_de = k_res_de
         self.k_res_dg = k_res_dg
+        self.Ca0_si = Ca0_si
+        self.Ca0_di = Ca0_di
         self.free_Ca_si = 0.01*Ca_si
         self.free_Ca_di = 0.01*Ca_di
+
+        # gating variables
+        self.n = n
+        self.h = h
+        self.s = s
+        self.c = c
+        self.q = q
+        self.z = z
 
         # membrane capacitance [F * m**-2]
         self.C_sm = 3e-2 # Pinsky and Rinzel, 1994
         self.C_dm = 3e-2 # Pinsky and Rinzel, 1994
-#        self.C_sm = 1e-2 # Wei et al. 2014
-#        self.C_dm = 1e-2 # Wei et al. 2014
        
         # volumes and areas
         self.alpha = alpha
         self.A_sn = 616e-12               # [m**2]
         self.A_dn = 616e-12               # [m**2]
         self.A_in = self.alpha*self.A_sn  # [m**2]
-        self.A_e = self.A_in/2.          # [m**2]
+        self.A_e = self.A_in/2.           # [m**2]
         self.A_sg = 616e-12               # [m**2]
         self.A_dg = 616e-12               # [m**2]
         self.A_ig = self.alpha*self.A_sg  # [m**2]
@@ -115,6 +103,11 @@ class Buffy():
         self.g_Na_leak = 0.247 # Wei et al. 2014
         self.g_K_leak = 0.5    # Wei et al. 2014
         self.g_Cl_leak = 1.0   # Wei et al. 2014
+        self.g_Na = 300.
+        self.g_DR = 150.
+        self.g_Ca = 118.
+        self.g_AHP = 8.
+        self.g_C = 150.
 
     def j_Na_s(self, phi_sm, E_Na_s):
         j = self.g_Na_leak*(phi_sm - E_Na_s) / (self.F*self.Z_Na)
@@ -357,11 +350,18 @@ if __name__ == "__main__":
 #    k_res_de = Cl_de0 - Na_de0 - K_de0 - 2*Ca_de0
 #    k_res_dg = Cl_dg0 - Na_dg0 - K_dg0
 
+    n = 0.0004
+    h = 0.999
+    s = 0.008
+    c = 0.006
+    q = 0.011
+    z = 1.0    
+
     def dkdt(t,k):
 
         Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de = k
 
-        my_cell = Buffy(T, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha)
+        my_cell = Buffy(T, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, Ca_si0, Ca_di0, n, h, s, c, q, z)
 
         dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de = my_cell.dkdt()
 
@@ -370,12 +370,12 @@ if __name__ == "__main__":
 
     
     start_time = time.time()
-    t_span = (0, 300)
+    t_span = (0, 0.5)
 
     k0 = [Na_si0, Na_se0, Na_sg0, Na_di0, Na_de0, Na_dg0, K_si0, K_se0, K_sg0, K_di0, K_de0, K_dg0, Cl_si0, Cl_se0, Cl_sg0, Cl_di0, Cl_de0, Cl_dg0, Ca_si0, Ca_se0, Ca_di0, Ca_de0]
 
     init_cell = Buffy(T, Na_si0, Na_se0, Na_sg0, Na_di0, Na_de0, Na_dg0, K_si0, K_se0, K_sg0, K_di0, K_de0, K_dg0, Cl_si0, Cl_se0, Cl_sg0, Cl_di0, Cl_de0, Cl_dg0, \
-        Ca_si0, Ca_se0, Ca_di0, Ca_de0, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha)
+        Ca_si0, Ca_se0, Ca_di0, Ca_de0, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, Ca_si0, Ca_di0, n, h, s, c, q, z)
 
 #    phi_si, phi_se, phi_di, phi_de, phi_sm, phi_dm = init_cell.membrane_potentials()
     
@@ -418,7 +418,7 @@ if __name__ == "__main__":
     t = sol.t
 
     my_cell = Buffy(T, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, \
-        Ca_si, Ca_se, Ca_di, Ca_de, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha)
+        Ca_si, Ca_se, Ca_di, Ca_de, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, Ca_si0, Ca_di0, n, h, s, c, q, z)
     
     phi_si, phi_se, phi_sg, phi_di, phi_de, phi_dg, phi_msn, phi_mdn, phi_msg, phi_mdg = my_cell.membrane_potentials()
     
