@@ -47,10 +47,17 @@ class Buffy():
         self.k_res_di = k_res_di
         self.k_res_de = k_res_de
         self.k_res_dg = k_res_dg
+        self.K0_se = 3           
+        self.K0_sg = 100          
+        self.K0_de = 3         
+        self.K0_dg = 100  
         self.Ca0_si = Ca0_si
         self.Ca0_di = Ca0_di
         self.free_Ca_si = 0.01*Ca_si
         self.free_Ca_di = 0.01*Ca_di
+
+        self.KNaI = 10
+        self.KKE = 1.5
 
         # gating variables
         self.n = n
@@ -110,11 +117,18 @@ class Buffy():
         self.g_Ca = 118.
         self.g_AHP = 8.
         self.g_C = 150.
+        self.g_Na_astro = 1.     # Halnes et al
+        self.g_K_astro = 16.96   # Halnes et al
+        self.g_Cl_astro = 0.5    # Halnes et al
         
         # pump strengths
         self.rho = 1.87e-6
         self.U_kcc2 = 7.00e-7
         self.U_nkcc1 = 2.33e-7
+        self.rho_astro = 1.12e-6
+
+        self.E0_K_sg = self.nernst_potential(self.Z_K, self.K0_sg, self.K_se)
+        self.E0_K_dg = self.nernst_potential(self.Z_K, self.K0_dg, self.K_de)
 
     def alpha_m(self, phi_sm):
         phi_1 = phi_sm*1e3 + 46.9
@@ -202,6 +216,10 @@ class Buffy():
         j = (self.rho / (1.0 + np.exp((25. - Na_i)/3.))) * (1.0 / (1.0 + np.exp(3.5 - K_e)))
         return j
 
+    def j_pump_astro(self, Na_i, K_e):
+        j = self.rho_astro * (Na_i**1.5 / (Na_i**1.5 + self.KNaI**1.5)) * (K_e / (K_e + self.KKE))
+        return j
+
     def j_kcc2(self, K_i, K_e, Cl_i, Cl_e):
         j = self.U_kcc2 * np.log(K_i*Cl_i/(K_e*Cl_e))
         return j
@@ -256,6 +274,44 @@ class Buffy():
         j = self.g_Ca * self.s**2 * self.z * (phi_dm - E_Ca_d) / (self.F*self.Z_Ca)
         return j
 
+    def j_Na_sg(self, phi_sm, E_Na_g):
+        j = self.g_Na_astro * (phi_sm - E_Na_g) / self.F \
+        + 3*self.j_pump_astro(self.Na_sg, self.K_se)
+        return j
+
+    def f_s(self, dphi, phi_sm):
+        f = np.sqrt(self.K_se/self.K0_se) * ((1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))) * ((1 + np.exp(-(118.6+self.E0_K_sg)/44.1))/(1+np.exp(-(118.6+phi_sm)/44.1)))
+        return f
+
+    def j_K_sg(self, phi_sm, E_K_g):
+        dphi = (phi_sm - E_K_g)*1000
+        j = self.g_K_astro * self.f_s(dphi, phi_sm) * (phi_sm - E_K_g) / self.F \
+        - 2 * self.j_pump_astro(self.Na_sg, self.K_se)
+        return j
+
+    def j_Cl_sg(self, phi_sm, E_Cl_g):
+        j = self.g_Cl_astro * (phi_sm - E_Cl_g) / self.F
+        return j
+
+    def j_Na_dg(self, phi_dm, E_Na_g):
+        j = self.g_Na_astro * (phi_dm - E_Na_g) / self.F \
+        + 3*self.j_pump_astro(self.Na_dg, self.K_de)
+        return j
+
+    def f_d(self, dphi, phi_dm):
+        f = np.sqrt(self.K_de/self.K0_de) * ((1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))) * ((1 + np.exp(-(118.6+self.E0_K_dg)/44.1))/(1+np.exp(-(118.6+phi_dm)/44.1)))
+        return f
+
+    def j_K_dg(self, phi_dm, E_K_g):
+        dphi = (phi_dm - E_K_g)*1000
+        j = self.g_K_astro * self.f_d(dphi, phi_dm) * (phi_dm - E_K_g) / self.F \
+        - 2 * self.j_pump_astro(self.Na_dg, self.K_de)
+        return j
+
+    def j_Cl_dg(self, phi_dm, E_Cl_g):
+        j = self.g_Cl_astro * (phi_dm - E_Cl_g) / self.F
+        return j
+
     def j_k_diff(self, D_k, tortuosity, k_s, k_d):
         j = - D_k * (k_d - k_s) / (tortuosity**2 * self.dx)
         return j
@@ -282,17 +338,17 @@ class Buffy():
 
     def reversal_potentials(self):
         E_Na_sn = self.nernst_potential(self.Z_Na, self.Na_si, self.Na_se)
-        E_Na_sg = 0 #self.nernst_potential(self.Z_Na, self.Na_sg, self.Na_se)
+        E_Na_sg = self.nernst_potential(self.Z_Na, self.Na_sg, self.Na_se)
         E_Na_dn = self.nernst_potential(self.Z_Na, self.Na_di, self.Na_de)
-        E_Na_dg = 0 #self.nernst_potential(self.Z_Na, self.Na_dg, self.Na_de)
+        E_Na_dg = self.nernst_potential(self.Z_Na, self.Na_dg, self.Na_de)
         E_K_sn = self.nernst_potential(self.Z_K, self.K_si, self.K_se)
-        E_K_sg = 0 #self.nernst_potential(self.Z_K, self.K_sg, self.K_se)
+        E_K_sg = self.nernst_potential(self.Z_K, self.K_sg, self.K_se)
         E_K_dn = self.nernst_potential(self.Z_K, self.K_di, self.K_de)
-        E_K_dg = 0 #self.nernst_potential(self.Z_K, self.K_dg, self.K_de)
+        E_K_dg = self.nernst_potential(self.Z_K, self.K_dg, self.K_de)
         E_Cl_sn = self.nernst_potential(self.Z_Cl, self.Cl_si, self.Cl_se)
-        E_Cl_sg = 0 #self.nernst_potential(self.Z_Cl, self.Cl_sg, self.Cl_se)
+        E_Cl_sg = self.nernst_potential(self.Z_Cl, self.Cl_sg, self.Cl_se)
         E_Cl_dn = self.nernst_potential(self.Z_Cl, self.Cl_di, self.Cl_de)
-        E_Cl_dg = 0 #self.nernst_potential(self.Z_Cl, self.Cl_dg, self.Cl_de)
+        E_Cl_dg = self.nernst_potential(self.Z_Cl, self.Cl_dg, self.Cl_de)
         E_Ca_sn = self.nernst_potential(self.Z_Ca, self.free_Ca_si, self.Ca_se)
         E_Ca_dn = self.nernst_potential(self.Z_Ca, self.free_Ca_di, self.Ca_de)
         return E_Na_sn, E_Na_sg, E_Na_dn, E_Na_dg, E_K_sn, E_K_sg, E_K_dn, E_K_dg, E_Cl_sn, E_Cl_sg, E_Cl_dn, E_Cl_dg, E_Ca_sn, E_Ca_dn
@@ -354,17 +410,17 @@ class Buffy():
         j_K_msn = self.j_K_sn(phi_msn, E_K_sn)
         j_Cl_msn = self.j_Cl_sn(phi_msn, E_Cl_sn)
 
-        j_Na_msg = 0 #self.j_Na_s(phi_msg, E_Na_sg)
-        j_K_msg = 0 #self.j_K_s(phi_msg, E_K_sg)
-        j_Cl_msg = 0 #self.j_Cl_s(phi_msg, E_Cl_sg)
+        j_Na_msg = self.j_Na_sg(phi_msg, E_Na_sg)
+        j_K_msg = self.j_K_sg(phi_msg, E_K_sg)
+        j_Cl_msg = self.j_Cl_sg(phi_msg, E_Cl_sg)
 
         j_Na_mdn = self.j_Na_dn(phi_mdn, E_Na_dn)
         j_K_mdn = self.j_K_dn(phi_mdn, E_K_dn)    
         j_Cl_mdn = self.j_Cl_dn(phi_mdn, E_Cl_dn)
 
-        j_Na_mdg = 0 #self.j_Na_d(phi_mdg, E_Na_dg)
-        j_K_mdg = 0 #self.j_K_d(phi_mdg, E_K_dg)
-        j_Cl_mdg = 0 #self.j_Cl_d(phi_mdg, E_Cl_dg)
+        j_Na_mdg = self.j_Na_dg(phi_mdg, E_Na_dg)
+        j_K_mdg = self.j_K_dg(phi_mdg, E_K_dg)
+        j_Cl_mdg = self.j_Cl_dg(phi_mdg, E_Cl_dg)
 
         j_Ca_mdn = self.j_Ca_dn(phi_mdn, E_Ca_dn)
 
@@ -445,25 +501,25 @@ if __name__ == "__main__":
 
     Na_si0 = 18.
     Na_se0 = 139.
-    Na_sg0 = 0.
+    Na_sg0 = 15.
     K_si0 = 99.
     K_se0 = 5.
-    K_sg0 = 0.
+    K_sg0 = 100.
     Cl_si0 = 7.
     Cl_se0 = 131.
-    Cl_sg0 = 0.
+    Cl_sg0 = 5.
     Ca_si0 = 0.01
     Ca_se0 = 1.1
 
     Na_di0 = 18.
     Na_de0 = 139.
-    Na_dg0 = 0.
+    Na_dg0 = 15.
     K_di0 = 99.
     K_de0 = 5.
-    K_dg0 = 0.
+    K_dg0 = 100.
     Cl_di0 = 7.
     Cl_de0 = 131.
-    Cl_dg0 = 0.
+    Cl_dg0 = 5.
     Ca_di0 = 0.01
     Ca_de0 = 1.1
 
@@ -484,12 +540,12 @@ if __name__ == "__main__":
     res_i = -66e-3*3e-2*616e-12/(1437e-18*9.648e4)
     res_e = -66e-3*3e-2*616e-12/(718.5e-18*9.648e4)
 
-    k_res_si = Cl_si0 - Na_si0 - K_si0 - 2*Ca_si0 + res_i
-    k_res_se = Cl_se0 - Na_se0 - K_se0 - 2*Ca_se0 - res_e
-    k_res_sg = Cl_sg0 - Na_sg0 - K_sg0
-    k_res_di = Cl_di0 - Na_di0 - K_di0 - 2*Ca_di0 + res_i
-    k_res_de = Cl_de0 - Na_de0 - K_de0 - 2*Ca_de0 - res_e
-    k_res_dg = Cl_dg0 - Na_dg0 - K_dg0
+    k_res_si = Cl_si0 - Na_si0 - K_si0 - 2*Ca_si0# + res_i
+    k_res_se = Cl_se0 - Na_se0 - K_se0 - 2*Ca_se0# - res_e*2
+    k_res_sg = Cl_sg0 - Na_sg0 - K_sg0# + res_i
+    k_res_di = Cl_di0 - Na_di0 - K_di0 - 2*Ca_di0# + res_i
+    k_res_de = Cl_de0 - Na_de0 - K_de0 - 2*Ca_de0# - res_e*2
+    k_res_dg = Cl_dg0 - Na_dg0 - K_dg0# + res_i
 
     n0 = 0.0004
     h0 = 0.999
@@ -498,8 +554,8 @@ if __name__ == "__main__":
     q0 = 0.011
     z0 = 1.0    
 
-    I_stim = 30e-12 # [A]
-    alpha = 0.4
+    I_stim = 41e-12 # [A]
+    alpha = 2
     
     def dkdt(t,k):
 
@@ -518,7 +574,7 @@ if __name__ == "__main__":
             dndt, dhdt, dsdt, dcdt, dqdt, dzdt 
 
     start_time = time.time()
-    t_span = (0, 20)
+    t_span = (0, 30)
 
     k0 = [Na_si0, Na_se0, Na_sg0, Na_di0, Na_de0, Na_dg0, K_si0, K_se0, K_sg0, K_di0, K_de0, K_dg0, Cl_si0, Cl_se0, Cl_sg0, Cl_di0, Cl_de0, Cl_dg0, Ca_si0, Ca_se0, Ca_di0, Ca_de0, n0, h0, s0, c0, q0, z0]
 
@@ -550,6 +606,8 @@ if __name__ == "__main__":
     print('phi_de: ', round(phi_de*1000))
     print('phi_msn: ', round(phi_msn*1000))
     print('phi_mdn: ', round(phi_mdn*1000))
+    print('phi_msg: ', round(phi_msg*1000))
+    print('phi_mdg: ', round(phi_mdg*1000))
     print('E_Na_sn: ', round(E_Na_sn*1000))
     print('E_Na_dn: ', round(E_Na_dn*1000))
     print('E_Na_dg: ', round(E_Na_dg*1000))
