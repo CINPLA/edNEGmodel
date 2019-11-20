@@ -299,17 +299,17 @@ class Buffy():
         return dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, \
             dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de
 
-        def dmdt(self):
-            phi_si, phi_se, phi_sg, phi_di, phi_de, phi_dg, phi_msn, phi_mdn, phi_msg, phi_mdg  = self.membrane_potentials()
-            
-            dndt = 0
-            dhdt = 0
-            dsdt = 0
-            dcdt = 0
-            dqdt = 0
-            dzdt = 0
+    def dmdt(self):
+        phi_si, phi_se, phi_sg, phi_di, phi_de, phi_dg, phi_msn, phi_mdn, phi_msg, phi_mdg  = self.membrane_potentials()
+        
+        dndt = 0
+        dhdt = 0
+        dsdt = 0
+        dcdt = 0
+        dqdt = 0
+        dzdt = 0
 
-            return dndt, dhdt, dsdt, dcdt, dqdt, dzdt
+        return dndt, dhdt, dsdt, dcdt, dqdt, dzdt
 
 if __name__ == "__main__":
 
