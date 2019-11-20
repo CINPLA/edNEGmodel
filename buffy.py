@@ -109,29 +109,29 @@ class Buffy():
         self.g_AHP = 8.
         self.g_C = 150.
 
-    def j_Na_s(self, phi_sm, E_Na_s):
+    def j_Na_sn(self, phi_sm, E_Na_s):
         j = self.g_Na_leak*(phi_sm - E_Na_s) / (self.F*self.Z_Na)
         return j 
 
-    def j_K_s(self, phi_sm, E_K_s):
+    def j_K_sn(self, phi_sm, E_K_s):
         j = self.g_K_leak*(phi_sm - E_K_s) / (self.F*self.Z_K)
         return j
 
-    def j_Cl_s(self, phi_sm, E_Cl_s):
+    def j_Cl_sn(self, phi_sm, E_Cl_s):
         j = self.g_Cl_leak*(phi_sm - E_Cl_s) / (self.F*self.Z_Cl)
         return j
 
-#    def j_Na_d(self, phi_dm, E_Na_d):
-#        j = self.g_Na_leak*(phi_dm - E_Na_d) / (self.F*self.Z_Na) 
-#        return j
-#
-#    def j_K_d(self, phi_dm, E_K_d):
-#        j = self.g_K_leak*(phi_dm - E_K_d) / (self.F*self.Z_K) 
-#        return j
-#
-#    def j_Cl_d(self, phi_dm, E_Cl_d):
-#        j = self.g_Cl_leak*(phi_dm - E_Cl_d) / (self.F*self.Z_Cl) 
-#        return j
+    def j_Na_dn(self, phi_dm, E_Na_d):
+        j = self.g_Na_leak*(phi_dm - E_Na_d) / (self.F*self.Z_Na) 
+        return j
+
+    def j_K_dn(self, phi_dm, E_K_d):
+        j = self.g_K_leak*(phi_dm - E_K_d) / (self.F*self.Z_K) 
+        return j
+
+    def j_Cl_dn(self, phi_dm, E_Cl_d):
+        j = self.g_Cl_leak*(phi_dm - E_Cl_d) / (self.F*self.Z_Cl) 
+        return j
 
     def j_k_diff(self, D_k, tortuosity, k_s, k_d):
         j = - D_k * (k_d - k_s) / (tortuosity**2 * self.dx)
@@ -155,24 +155,23 @@ class Buffy():
 
     def nernst_potential(self, Z, k_i, k_e):
         E = self.R*self.T / (Z*self.F) * np.log(k_e / k_i)
-        #E = 26.64e-3 * np.log(k_e / k_i) / Z
         return E
 
     def reversal_potentials(self):
         E_Na_sn = self.nernst_potential(self.Z_Na, self.Na_si, self.Na_se)
-        E_Na_sg = self.nernst_potential(self.Z_Na, self.Na_sg, self.Na_se)
+        E_Na_sg = 0 #self.nernst_potential(self.Z_Na, self.Na_sg, self.Na_se)
         E_Na_dn = self.nernst_potential(self.Z_Na, self.Na_di, self.Na_de)
-        E_Na_dg = self.nernst_potential(self.Z_Na, self.Na_dg, self.Na_de)
+        E_Na_dg = 0 #self.nernst_potential(self.Z_Na, self.Na_dg, self.Na_de)
         E_K_sn = self.nernst_potential(self.Z_K, self.K_si, self.K_se)
-        E_K_sg = self.nernst_potential(self.Z_K, self.K_sg, self.K_se)
+        E_K_sg = 0 #self.nernst_potential(self.Z_K, self.K_sg, self.K_se)
         E_K_dn = self.nernst_potential(self.Z_K, self.K_di, self.K_de)
-        E_K_dg = self.nernst_potential(self.Z_K, self.K_dg, self.K_de)
+        E_K_dg = 0 #self.nernst_potential(self.Z_K, self.K_dg, self.K_de)
         E_Cl_sn = self.nernst_potential(self.Z_Cl, self.Cl_si, self.Cl_se)
-        E_Cl_sg = self.nernst_potential(self.Z_Cl, self.Cl_sg, self.Cl_se)
+        E_Cl_sg = 0 #self.nernst_potential(self.Z_Cl, self.Cl_sg, self.Cl_se)
         E_Cl_dn = self.nernst_potential(self.Z_Cl, self.Cl_di, self.Cl_de)
-        E_Cl_dg = self.nernst_potential(self.Z_Cl, self.Cl_dg, self.Cl_de)
-        E_Ca_sn = 0 #self.nernst_potential(self.Z_Ca, self.free_Ca_si, self.Ca_se)
-        E_Ca_dn = 0 #self.nernst_potential(self.Z_Ca, self.free_Ca_di, self.Ca_de)
+        E_Cl_dg = 0 #self.nernst_potential(self.Z_Cl, self.Cl_dg, self.Cl_de)
+        E_Ca_sn = self.nernst_potential(self.Z_Ca, self.free_Ca_si, self.Ca_se)
+        E_Ca_dn = self.nernst_potential(self.Z_Ca, self.free_Ca_di, self.Ca_de)
         return E_Na_sn, E_Na_sg, E_Na_dn, E_Na_dg, E_K_sn, E_K_sg, E_K_dn, E_K_dg, E_Cl_sn, E_Cl_sg, E_Cl_dn, E_Cl_dg, E_Ca_sn, E_Ca_dn
 
     def membrane_potentials(self):
@@ -225,21 +224,21 @@ class Buffy():
         phi_si, phi_se, phi_sg, phi_di, phi_de, phi_dg, phi_msn, phi_mdn, phi_msg, phi_mdg  = self.membrane_potentials()
         E_Na_sn, E_Na_sg, E_Na_dn, E_Na_dg, E_K_sn, E_K_sg, E_K_dn, E_K_dg, E_Cl_sn, E_Cl_sg, E_Cl_dn, E_Cl_dg, E_Ca_sn, E_Ca_dn = self.reversal_potentials()
 
-        j_Na_msn = self.j_Na_s(phi_msn, E_Na_sn)
-        j_K_msn = self.j_K_s(phi_msn, E_K_sn)
-        j_Cl_msn = self.j_Cl_s(phi_msn, E_Cl_sn)
+        j_Na_msn = self.j_Na_sn(phi_msn, E_Na_sn)
+        j_K_msn = self.j_K_sn(phi_msn, E_K_sn)
+        j_Cl_msn = self.j_Cl_sn(phi_msn, E_Cl_sn)
 
-        j_Na_msg = self.j_Na_s(phi_msg, E_Na_sg)
-        j_K_msg = self.j_K_s(phi_msg, E_K_sg)
-        j_Cl_msg = self.j_Cl_s(phi_msg, E_Cl_sg)
+        j_Na_msg = 0 #self.j_Na_s(phi_msg, E_Na_sg)
+        j_K_msg = 0 #self.j_K_s(phi_msg, E_K_sg)
+        j_Cl_msg = 0 #self.j_Cl_s(phi_msg, E_Cl_sg)
 
-        j_Na_mdn = self.j_Na_s(phi_mdn, E_Na_dn)
-        j_K_mdn = self.j_K_s(phi_mdn, E_K_dn)    
-        j_Cl_mdn = self.j_Cl_s(phi_mdn, E_Cl_dn)
+        j_Na_mdn = self.j_Na_dn(phi_mdn, E_Na_dn)
+        j_K_mdn = self.j_K_dn(phi_mdn, E_K_dn)    
+        j_Cl_mdn = self.j_Cl_dn(phi_mdn, E_Cl_dn)
 
-        j_Na_mdg = self.j_Na_s(phi_mdg, E_Na_dg)
-        j_K_mdg = self.j_K_s(phi_mdg, E_K_dg)
-        j_Cl_mdg = self.j_Cl_s(phi_mdg, E_Cl_dg)
+        j_Na_mdg = 0 #self.j_Na_d(phi_mdg, E_Na_dg)
+        j_K_mdg = 0 #self.j_K_d(phi_mdg, E_K_dg)
+        j_Cl_mdg = 0 #self.j_Cl_d(phi_mdg, E_Cl_dg)
 
         j_Na_in = self.j_k_diff(self.D_Na, self.lamda_i, self.Na_si, self.Na_di) \
             + self.j_k_drift(self.D_Na, self.Z_Na, self.lamda_i, self.Na_si, self.Na_di, phi_si, phi_di) 
@@ -305,50 +304,53 @@ if __name__ == "__main__":
     T = 309.14
     alpha = 1.
 
-    Na_si0 = 15.
-    Na_se0 = 145.
-    Na_sg0 = 20.
-    K_si0 = 100.
-    K_se0 = 3.
-    K_sg0 = 90.
-    #Cl_si0 = 5.
-    #Cl_se0 = 134.
-    #Cl_sg0 = 5.
-    Ca_si0 = 0 #0.001
-    Ca_se0 = 0 #1.1
+    Na_si0 = 18.
+    Na_se0 = 139.
+    Na_sg0 = 0.
+    K_si0 = 99.
+    K_se0 = 5.
+    K_sg0 = 0.
+    Cl_si0 = 7.
+    Cl_se0 = 131.
+    Cl_sg0 = 0.
+    Ca_si0 = 0.01
+    Ca_se0 = 1.1
 
-    Na_di0 = 22.
-    Na_de0 = 150.
-    Na_dg0 = 18.
-    K_di0 = 80.
-    K_de0 = 8.
-    K_dg0 = 110.
-    #Cl_di0 = 5.
-    #Cl_de0 = 134.
-    #Cl_dg0 = 5.
-    Ca_di0 = 0#0.001
-    Ca_de0 = 0#1.1
+    Na_di0 = 20.
+    Na_de0 = 141.
+    Na_dg0 = 0.
+    K_di0 = 96.
+    K_de0 = 4.
+    K_dg0 = 0.
+    Cl_di0 = 7.
+    Cl_de0 = 131.
+    Cl_dg0 = 0.
+    Ca_di0 = 0.01
+    Ca_de0 = 1.1
 
-    Cl_si0 = Na_si0 + K_si0 + 2*Ca_si0
-    Cl_se0 = Na_se0 + K_se0 + 2*Ca_se0
-    Cl_sg0 = Na_sg0 + K_sg0
-    Cl_di0 = Na_di0 + K_di0 + 2*Ca_di0
-    Cl_de0 = Na_de0 + K_de0 + 2*Ca_de0
-    Cl_dg0 = Na_dg0 + K_dg0
+#    Cl_si0 = Na_si0 + K_si0 + 2*Ca_si0
+#    Cl_se0 = Na_se0 + K_se0 + 2*Ca_se0
+#    Cl_sg0 = Na_sg0 + K_sg0
+#    Cl_di0 = Na_di0 + K_di0 + 2*Ca_di0
+#    Cl_de0 = Na_de0 + K_de0 + 2*Ca_de0
+#    Cl_dg0 = Na_dg0 + K_dg0
+#
+#    k_res_si = 0
+#    k_res_se = 0
+#    k_res_sg = 0
+#    k_res_di = 0
+#    k_res_de = 0
+#    k_res_dg = 0
 
-    k_res_si = 0
-    k_res_se = 0
-    k_res_sg = 0
-    k_res_di = 0
-    k_res_de = 0
-    k_res_dg = 0
+    res_i = -66e-3*3e-2*616e-12/(1437e-18*9.648e4)
+    res_e = -66e-3*3e-2*616e-12/(718.5e-18*9.648e4)
 
-#    k_res_si = Cl_si0 - Na_si0 - K_si0 - 2*Ca_si0
-#    k_res_se = Cl_se0 - Na_se0 - K_se0 - 2*Ca_se0
-#    k_res_sg = Cl_sg0 - Na_sg0 - K_sg0
-#    k_res_di = Cl_di0 - Na_di0 - K_di0 - 2*Ca_di0
-#    k_res_de = Cl_de0 - Na_de0 - K_de0 - 2*Ca_de0
-#    k_res_dg = Cl_dg0 - Na_dg0 - K_dg0
+    k_res_si = Cl_si0 - Na_si0 - K_si0 - 2*Ca_si0 + res_i
+    k_res_se = Cl_se0 - Na_se0 - K_se0 - 2*Ca_se0 - res_e
+    k_res_sg = Cl_sg0 - Na_sg0 - K_sg0
+    k_res_di = Cl_di0 - Na_di0 - K_di0 - 2*Ca_di0 + res_i
+    k_res_de = Cl_de0 - Na_de0 - K_de0 - 2*Ca_de0 - res_e
+    k_res_dg = Cl_dg0 - Na_dg0 - K_dg0
 
     n = 0.0004
     h = 0.999
@@ -368,18 +370,17 @@ if __name__ == "__main__":
         return dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, \
             dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de
 
-    
     start_time = time.time()
-    t_span = (0, 0.5)
+    t_span = (0, 10)
 
     k0 = [Na_si0, Na_se0, Na_sg0, Na_di0, Na_de0, Na_dg0, K_si0, K_se0, K_sg0, K_di0, K_de0, K_dg0, Cl_si0, Cl_se0, Cl_sg0, Cl_di0, Cl_de0, Cl_dg0, Ca_si0, Ca_se0, Ca_di0, Ca_de0]
 
     init_cell = Buffy(T, Na_si0, Na_se0, Na_sg0, Na_di0, Na_de0, Na_dg0, K_si0, K_se0, K_sg0, K_di0, K_de0, K_dg0, Cl_si0, Cl_se0, Cl_sg0, Cl_di0, Cl_de0, Cl_dg0, \
         Ca_si0, Ca_se0, Ca_di0, Ca_de0, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, Ca_si0, Ca_di0, n, h, s, c, q, z)
 
-#    phi_si, phi_se, phi_di, phi_de, phi_sm, phi_dm = init_cell.membrane_potentials()
+    phi_si, phi_se, phi_sg, phi_di, phi_de, phi_dg, phi_msn, phi_mdn, phi_msg, phi_mdg = init_cell.membrane_potentials()
     
-#    E_Na_s, E_Na_d, E_K_s, E_K_d, E_Cl_s, E_Cl_d, E_Ca_s, E_Ca_d = init_cell.reversal_potentials()
+    E_Na_sn, E_Na_sg, E_Na_dn, E_Na_dg, E_K_sn, E_K_sg, E_K_dn, E_K_dg, E_Cl_sn, E_Cl_sg, E_Cl_dn, E_Cl_dg, E_Ca_sn, E_Ca_dn = init_cell.reversal_potentials()
 
     q_si = init_cell.total_charge([init_cell.Na_si, init_cell.K_si, init_cell.Cl_si, init_cell.Ca_si], init_cell.k_res_si, init_cell.V_si)
     q_se = init_cell.total_charge([init_cell.Na_se, init_cell.K_se, init_cell.Cl_se, init_cell.Ca_se], init_cell.k_res_se, init_cell.V_se)        
@@ -395,21 +396,24 @@ if __name__ == "__main__":
     print("Q_se (C): ", q_se)
     print("Q_di + Q_sg (C):", q_di+q_dg)
     print("Q_de (C): ", q_de)
-#    print("----------------------------")
-#    print('phi_si: ', phi_si)
-#    print('phi_se: ', phi_se)
-#    print('phi_di: ', phi_di)
-#    print('phi_de: ', phi_de)
-#    print('phi_sm: ', phi_sm)
-#    print('phi_dm: ', phi_dm)
-#    print('E_Na_s: ', E_Na_s)
-#    print('E_Na_d: ', E_Na_d)
-#    print('E_K_s: ', E_K_s)
-#    print('E_K_d: ', E_K_d)
-#    print('E_Cl_s: ', E_Cl_s)
-#    print('E_Cl_d: ', E_Cl_d)
-#    print('E_Ca_s: ', E_Ca_s)
-#    print('E_Ca_d: ', E_Ca_d)
+    print("----------------------------")
+    print('phi_si: ', round(phi_si*1000))
+    print('phi_se: ', round(phi_se*1000))
+    print('phi_di: ', round(phi_di*1000))
+    print('phi_de: ', round(phi_de*1000))
+    print('phi_msn: ', round(phi_msn*1000))
+    print('phi_mdn: ', round(phi_mdn*1000))
+    print('E_Na_sn: ', round(E_Na_sn*1000))
+    print('E_Na_dn: ', round(E_Na_dn*1000))
+    print('E_Na_dg: ', round(E_Na_dg*1000))
+    print('E_K_sn: ', round(E_K_sn*1000))
+    print('E_K_dn: ', round(E_K_dn*1000))
+    print('E_K_dg: ', round(E_K_dg*1000))
+    print('E_Cl_sn: ', round(E_Cl_sn*1000))
+    print('E_Cl_dn: ', round(E_Cl_dn*1000))
+    print('E_Cl_dg: ', round(E_Cl_dg*1000))
+    print('E_Ca_sn: ', round(E_Ca_sn*1000))
+    print('E_Ca_dn: ', round(E_Ca_dn*1000))
     print("----------------------------")
 
     sol = solve_ivp(dkdt, t_span, k0, max_step=1e-4)
@@ -422,7 +426,7 @@ if __name__ == "__main__":
     
     phi_si, phi_se, phi_sg, phi_di, phi_de, phi_dg, phi_msn, phi_mdn, phi_msg, phi_mdg = my_cell.membrane_potentials()
     
-    #E_Na_s, E_Na_d, E_K_s, E_K_d, E_Cl_s, E_Cl_d, E_Ca_s, E_Ca_d = my_cell.reversal_potentials()
+    E_Na_sn, E_Na_sg, E_Na_dn, E_Na_dg, E_K_sn, E_K_sg, E_K_dn, E_K_dg, E_Cl_sn, E_Cl_sg, E_Cl_dn, E_Cl_dg, E_Ca_sn, E_Ca_dn = my_cell.reversal_potentials()
 
     q_si = my_cell.total_charge([my_cell.Na_si[-1], my_cell.K_si[-1], my_cell.Cl_si[-1], my_cell.Ca_si[-1]], my_cell.k_res_si, my_cell.V_si)
     q_se = my_cell.total_charge([my_cell.Na_se[-1], my_cell.K_se[-1], my_cell.Cl_se[-1], my_cell.Ca_se[-1]], my_cell.k_res_se, my_cell.V_se)        
@@ -441,11 +445,11 @@ if __name__ == "__main__":
     print("----------------------------")
     print('elapsed time: ', round(time.time() - start_time, 1), 'seconds')
 
-    plt.figure(5)
+    plt.figure(1)
     plt.plot(t, phi_msn*1000, '-', label='sn')
     plt.plot(t, phi_mdn*1000, '-', label='dn')
-    plt.plot(t, phi_msg*1000, '-', label='sg')
-    plt.plot(t, phi_mdg*1000, '-', label='dg')
+#    plt.plot(t, phi_msg*1000, '-', label='sg')
+#    plt.plot(t, phi_mdg*1000, '-', label='dg')
     plt.title('Membrane potentials')
     plt.xlabel('time [s]')
     plt.legend(loc='upper right')
@@ -466,7 +470,7 @@ if __name__ == "__main__":
 #    plt.legend()
 #    plt.show()
 
-    plt.figure(1)
+    plt.figure(2)
     plt.plot(t, Na_si, label='Na_si')
     plt.plot(t, Na_se, label='Na_se')
     plt.plot(t, Na_sg, label='Na_sg')
@@ -477,7 +481,7 @@ if __name__ == "__main__":
     plt.xlabel('time [s]')
     plt.legend(loc='upper right')
 
-    plt.figure(2)
+    plt.figure(3)
     plt.plot(t, K_si, label='K_si')
     plt.plot(t, K_se, label='K_se')
     plt.plot(t, K_sg, label='K_sg')
@@ -488,7 +492,7 @@ if __name__ == "__main__":
     plt.xlabel('time [s]')
     plt.legend(loc='upper right')
 
-    plt.figure(3)
+    plt.figure(4)
     plt.plot(t, Cl_si, label='Cl_si')
     plt.plot(t, Cl_se, label='Cl_se')
     plt.plot(t, Cl_sg, label='Cl_sg')
@@ -499,7 +503,7 @@ if __name__ == "__main__":
     plt.xlabel('time [s]')
     plt.legend(loc='upper right')
 
-    plt.figure(4)
+    plt.figure(5)
     plt.plot(t, Ca_si, label='Ca_si')
     plt.plot(t, Ca_se, label='Ca_se')
     plt.plot(t, Ca_di, label='Ca_di')
