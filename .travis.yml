@@ -1,0 +1,17 @@
+language: python
+python:
+  - "3.6"
+
+notifications:
+  email:
+    recipients:
+      - m.j.satra@fys.uio.no
+    on_success: never
+    on_failure: never
+
+install:
+  - pip3 install scipy
+  - pip3 install matplotlib
+
+script:
+  - python3 -m pytest

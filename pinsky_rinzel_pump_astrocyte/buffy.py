@@ -1,10 +1,10 @@
 import numpy as np
-from math import fsum
+#from math import fsum
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 import time
 import warnings
-warnings.filterwarnings("error")
+#warnings.filterwarnings("error")
 
 class Buffy(): 
 
