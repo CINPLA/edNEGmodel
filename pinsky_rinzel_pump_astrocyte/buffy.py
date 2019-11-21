@@ -290,7 +290,7 @@ class Buffy():
         return j
 
     def j_Cl_sg(self, phi_sm, E_Cl_g):
-        j = self.g_Cl_astro * (phi_sm - E_Cl_g) / self.F
+        j = - self.g_Cl_astro * (phi_sm - E_Cl_g) / self.F
         return j
 
     def j_Na_dg(self, phi_dm, E_Na_g):
@@ -309,7 +309,7 @@ class Buffy():
         return j
 
     def j_Cl_dg(self, phi_dm, E_Cl_g):
-        j = self.g_Cl_astro * (phi_dm - E_Cl_g) / self.F
+        j = - self.g_Cl_astro * (phi_dm - E_Cl_g) / self.F
         return j
 
     def j_k_diff(self, D_k, tortuosity, k_s, k_d):
