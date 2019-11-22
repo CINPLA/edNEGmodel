@@ -281,13 +281,14 @@ class Buffy():
         + 3*self.j_pump_astro(self.Na_sg, self.K_se)
         return j
 
-    def f_s(self, dphi, phi_sm):
-        f = np.sqrt(self.K_se/self.K0_se) * ((1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))) * ((1 + np.exp(-(118.6+self.E0_K_sg)/44.1))/(1+np.exp(-(118.6+phi_sm)/44.1)))
-        return f
+#    def f_s(self, dphi, phi_sm):
+#        f = np.sqrt(self.K_se/self.K0_se) * ((1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))) * ((1 + np.exp(-(118.6+self.E0_K_sg)/44.1))/(1+np.exp(-(118.6+phi_sm)/44.1)))
+#        return f
 
     def j_K_sg(self, phi_sm, E_K_g):
         dphi = (phi_sm - E_K_g)*1000
-        j = self.g_K_astro * self.f_s(dphi, phi_sm) * (phi_sm - E_K_g) / self.F \
+        f = np.sqrt(self.K_se/self.K0_se) * ((1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))) * ((1 + np.exp(-(118.6+self.E0_K_sg)/44.1))/(1+np.exp(-(118.6+phi_sm)/44.1)))
+        j = self.g_K_astro * f * (phi_sm - E_K_g) / self.F \
         - 2 * self.j_pump_astro(self.Na_sg, self.K_se)
         return j
 
@@ -300,13 +301,14 @@ class Buffy():
         + 3*self.j_pump_astro(self.Na_dg, self.K_de)
         return j
 
-    def f_d(self, dphi, phi_dm):
-        f = np.sqrt(self.K_de/self.K0_de) * ((1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))) * ((1 + np.exp(-(118.6+self.E0_K_dg)/44.1))/(1+np.exp(-(118.6+phi_dm)/44.1)))
-        return f
+#    def f_d(self, dphi, phi_dm):
+#        f = np.sqrt(self.K_de/self.K0_de) * ((1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))) * ((1 + np.exp(-(118.6+self.E0_K_dg)/44.1))/(1+np.exp(-(118.6+phi_dm)/44.1)))
+#        return f
 
     def j_K_dg(self, phi_dm, E_K_g):
         dphi = (phi_dm - E_K_g)*1000
-        j = self.g_K_astro * self.f_d(dphi, phi_dm) * (phi_dm - E_K_g) / self.F \
+        f = np.sqrt(self.K_de/self.K0_de) * ((1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))) * ((1 + np.exp(-(118.6+self.E0_K_dg)/44.1))/(1+np.exp(-(118.6+phi_dm)/44.1)))
+        j = self.g_K_astro * f * (phi_dm - E_K_g) / self.F \
         - 2 * self.j_pump_astro(self.Na_dg, self.K_de)
         return j
 
@@ -339,6 +341,20 @@ class Buffy():
         return E
 
     def reversal_potentials(self):
+#        E_Na_sn = 26.64e-3 * np.log(self.Na_se / self.Na_si)
+#        E_Na_sg = 26.64e-3 * np.log(self.Na_se / self.Na_sg)
+#        E_Na_dn = 26.64e-3 * np.log(self.Na_de / self.Na_di)
+#        E_Na_dg = 26.64e-3 * np.log(self.Na_de / self.Na_dg)
+#        E_K_sn = 26.64e-3 * np.log(self.K_se / self.K_si)
+#        E_K_sg = 26.64e-3 * np.log(self.K_se / self.K_sg)
+#        E_K_dn = 26.64e-3 * np.log(self.K_de / self.K_di)
+#        E_K_dg = 26.64e-3 * np.log(self.K_de / self.K_dg)
+#        E_Cl_sn = -26.64e-3 * np.log(self.Cl_se / self.Cl_si)
+#        E_Cl_sg = -26.64e-3 * np.log(self.Cl_se / self.Cl_sg)
+#        E_Cl_dn = -26.64e-3 * np.log(self.Cl_de / self.Cl_di)
+#        E_Cl_dg = -26.64e-3 * np.log(self.Cl_de / self.Cl_dg)
+#        E_Ca_sn = 26.64e-3 * np.log(self.Ca_se / self.Ca_si)/2.
+#        E_Ca_dn = 26.64e-3 * np.log(self.Ca_de / self.Ca_di)/2.
         E_Na_sn = self.nernst_potential(self.Z_Na, self.Na_si, self.Na_se)
         E_Na_sg = self.nernst_potential(self.Z_Na, self.Na_sg, self.Na_se)
         E_Na_dn = self.nernst_potential(self.Z_Na, self.Na_di, self.Na_de)
@@ -556,7 +572,7 @@ if __name__ == "__main__":
     q0 = 0.011
     z0 = 1.0    
 
-    I_stim = 60e-12 # [A]
+#    I_stim = 60e-12 # [A]
     alpha = 2
     
     def dkdt(t,k):
@@ -573,15 +589,15 @@ if __name__ == "__main__":
         dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de = my_cell.dkdt()
         dndt, dhdt, dsdt, dcdt, dqdt, dzdt = my_cell.dmdt()
 
-        if t > 5: # and t < 8:
-            dKdt_si, dKdt_se = somatic_injection_current(my_cell, dKdt_si, dKdt_se, 1.0, I_stim)
+#        if t > 5: # and t < 8:
+#            dKdt_si, dKdt_se = somatic_injection_current(my_cell, dKdt_si, dKdt_se, 1.0, I_stim)
 
         return dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, \
             dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de, \
             dndt, dhdt, dsdt, dcdt, dqdt, dzdt 
 
     start_time = time.time()
-    t_span = (0, 0.3)
+    t_span = (0, 1)
 
     k0 = [Na_si0, Na_se0, Na_sg0, Na_di0, Na_de0, Na_dg0, K_si0, K_se0, K_sg0, K_di0, K_de0, K_dg0, Cl_si0, Cl_se0, Cl_sg0, Cl_di0, Cl_de0, Cl_dg0, Ca_si0, Ca_se0, Ca_di0, Ca_de0, n0, h0, s0, c0, q0, z0]
 
