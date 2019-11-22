@@ -68,8 +68,10 @@ class Buffy():
         self.z = z
 
         # membrane capacitance [F * m**-2]
-        self.C_sm = 3e-2 # Pinsky and Rinzel, 1994
-        self.C_dm = 3e-2 # Pinsky and Rinzel, 1994
+        self.C_msn = 3e-2 # Pinsky and Rinzel, 1994
+        self.C_mdn = 3e-2 # Pinsky and Rinzel, 1994
+        self.C_msg = 3e-2
+        self.C_mdg = 3e-2
        
         # volumes and areas
         self.alpha = alpha
@@ -383,14 +385,14 @@ class Buffy():
         q_si = self.total_charge([self.Na_si, self.K_si, self.Cl_si, self.Ca_si], self.k_res_si, self.V_si)
         q_sg = self.total_charge([self.Na_sg, self.K_sg, self.Cl_sg, 0], self.k_res_sg, self.V_sg)
 
-        phi_di = q_di / (self.C_dm * self.A_dn)
+        phi_di = q_di / (self.C_mdn * self.A_dn)
         phi_de = 0.
-        phi_dg = q_dg / (self.C_dm * self.A_dg)
-        phi_se = ( - self.dx * self.A_in * I_n_diff + self.A_in * sigma_i * phi_di - self.A_in * sigma_i * q_si / (self.C_sm * self.A_sn) \
-            - self.dx * self.A_ig * I_g_diff + self.A_ig * sigma_g * phi_dg - self.A_ig * sigma_g * q_sg / (self.C_sm * self.A_sg) - self.dx * self.A_e * I_e_diff ) \
+        phi_dg = q_dg / (self.C_mdg * self.A_dg)
+        phi_se = ( - self.dx * self.A_in * I_n_diff + self.A_in * sigma_i * phi_di - self.A_in * sigma_i * q_si / (self.C_msn * self.A_sn) \
+            - self.dx * self.A_ig * I_g_diff + self.A_ig * sigma_g * phi_dg - self.A_ig * sigma_g * q_sg / (self.C_msg * self.A_sg) - self.dx * self.A_e * I_e_diff ) \
             / ( self.A_e * sigma_e + self.A_in * sigma_i + self.A_ig * sigma_g )
-        phi_si = q_si / (self.C_sm * self.A_sn) + phi_se
-        phi_sg = q_sg / (self.C_sm * self.A_sg) + phi_se
+        phi_si = q_si / (self.C_msn * self.A_sn) + phi_se
+        phi_sg = q_sg / (self.C_msg * self.A_sg) + phi_se
         phi_msn = phi_si - phi_se
         phi_msg = phi_sg - phi_se
         phi_mdn = phi_di - phi_de
@@ -554,7 +556,7 @@ if __name__ == "__main__":
     q0 = 0.011
     z0 = 1.0    
 
-    I_stim = 41e-12 # [A]
+    I_stim = 60e-12 # [A]
     alpha = 2
     
     def dkdt(t,k):
@@ -563,10 +565,15 @@ if __name__ == "__main__":
 
         my_cell = Buffy(T, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, Ca_si0, Ca_di0, n, h, s, c, q, z)
 
+#        my_cell.g_Na_astro = 0
+#        my_cell.g_K_astro = 0
+#        my_cell.g_Cl_astro = 0
+#        my_cell.rho_astro = 0
+
         dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de = my_cell.dkdt()
         dndt, dhdt, dsdt, dcdt, dqdt, dzdt = my_cell.dmdt()
 
-        if t > 10:
+        if t > 5: # and t < 8:
             dKdt_si, dKdt_se = somatic_injection_current(my_cell, dKdt_si, dKdt_se, 1.0, I_stim)
 
         return dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, \
@@ -574,7 +581,7 @@ if __name__ == "__main__":
             dndt, dhdt, dsdt, dcdt, dqdt, dzdt 
 
     start_time = time.time()
-    t_span = (0, 30)
+    t_span = (0, 0.3)
 
     k0 = [Na_si0, Na_se0, Na_sg0, Na_di0, Na_de0, Na_dg0, K_si0, K_se0, K_sg0, K_di0, K_de0, K_dg0, Cl_si0, Cl_se0, Cl_sg0, Cl_di0, Cl_de0, Cl_dg0, Ca_si0, Ca_se0, Ca_di0, Ca_de0, n0, h0, s0, c0, q0, z0]
 
