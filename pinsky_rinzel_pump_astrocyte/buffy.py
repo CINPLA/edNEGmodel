@@ -13,6 +13,7 @@ class Buffy():
     def __init__(self, T, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, \
         Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, \
         k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, \
+        K0_se, K0_sg, K0_de, K0_dg, \
         Ca0_si, Ca0_di, n, h, s, c, q, z):
         
         # temperature [K]
@@ -47,10 +48,10 @@ class Buffy():
         self.k_res_di = k_res_di
         self.k_res_de = k_res_de
         self.k_res_dg = k_res_dg
-        self.K0_se = 3           
-        self.K0_sg = 100          
-        self.K0_de = 3         
-        self.K0_dg = 100  
+        self.K0_se = K0_se           
+        self.K0_sg = K0_sg          
+        self.K0_de = K0_de     
+        self.K0_dg = K0_dg
         self.Ca0_si = Ca0_si
         self.Ca0_di = Ca0_di
         self.free_Ca_si = 0.01*Ca_si
