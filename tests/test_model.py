@@ -5,7 +5,7 @@ from pinsky_rinzel_pump_astrocyte.somatic_injection_current import *
 def test_modules():
 
     test_cell = Buffy(279.3, 14., 145., 14., 16., 145., 16., 100., 3., 100., 100., 3., 100., 115., 148., 115., 115., 148., 115., \
-        1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        1, 1, 1, 1, 100, 3, 100, 3, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0)
 
     assert round(test_cell.nernst_potential(1., 400., 20.), 4) == -0.0721
 
