@@ -494,16 +494,8 @@ class Buffy():
         dCadt_di = j_Ca_in*(self.A_in / self.V_di) - j_Ca_mdn*(self.A_dn / self.V_di) - 75.*(self.Ca_di - self.Ca0_di)
         dCadt_de = j_Ca_e*(self.A_e / self.V_de) + j_Ca_mdn*(self.A_dn / self.V_de) + V_fr_d*75.*(self.Ca_di - self.Ca0_di)
 
-        dresdt_si = 0
-        dresdt_se = 0
-        dresdt_sg = 0
-        dresdt_di = 0
-        dresdt_de = 0
-        dresdt_dg = 0
-
         return dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, \
-            dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de, \
-            dresdt_si, dresdt_se, dresdt_sg, dresdt_di, dresdt_de, dresdt_dg
+            dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de
 
     def dmdt(self):
         phi_si, phi_se, phi_sg, phi_di, phi_de, phi_dg, phi_msn, phi_mdn, phi_msg, phi_mdg  = self.membrane_potentials()
