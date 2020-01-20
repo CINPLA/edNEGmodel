@@ -4,7 +4,7 @@ from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 import time
 import warnings
-from somatic_injection_current import *
+from .somatic_injection_current import *
 
 #warnings.filterwarnings("error")
 
@@ -129,8 +129,8 @@ class Buffy():
         self.U_nkcc1 = 2.33e-7
         self.rho_astro = 1.12e-6
 
-        self.E0_K_sg = self.nernst_potential(self.Z_K, self.K0_sg, self.K_se)
-        self.E0_K_dg = self.nernst_potential(self.Z_K, self.K0_dg, self.K_de)
+        self.E0_K_sg = self.nernst_potential(self.Z_K, self.K0_sg, self.K0_se)
+        self.E0_K_dg = self.nernst_potential(self.Z_K, self.K0_dg, self.K0_de)
 
     def alpha_m(self, phi_sm):
         phi_1 = phi_sm*1e3 + 46.9
@@ -493,13 +493,16 @@ class Buffy():
         dCadt_di = j_Ca_in*(self.A_in / self.V_di) - j_Ca_mdn*(self.A_dn / self.V_di) - 75.*(self.Ca_di - self.Ca0_di)
         dCadt_de = j_Ca_e*(self.A_e / self.V_de) + j_Ca_mdn*(self.A_dn / self.V_de) + V_fr_d*75.*(self.Ca_di - self.Ca0_di)
 
-#        dresdt_si = 0
-#        dresdt_di = 0
-#        dresdt_se = 0
-#        dresdt_de = 0
+        dresdt_si = 0
+        dresdt_se = 0
+        dresdt_sg = 0
+        dresdt_di = 0
+        dresdt_de = 0
+        dresdt_dg = 0
 
         return dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, \
-            dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de
+            dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de, \
+            dresdt_si, dresdt_se, dresdt_sg, dresdt_di, dresdt_de, dresdt_dg
 
     def dmdt(self):
         phi_si, phi_se, phi_sg, phi_di, phi_de, phi_dg, phi_msn, phi_mdn, phi_msg, phi_mdg  = self.membrane_potentials()
@@ -521,7 +524,7 @@ if __name__ == "__main__":
     Na_se0 = 139.
     Na_sg0 = 15.
     K_si0 = 99.
-    K_se0 = 5.
+    K_se0 = 5. # sette den til 3?
     K_sg0 = 100.
     Cl_si0 = 7.
     Cl_se0 = 131.
@@ -597,7 +600,7 @@ if __name__ == "__main__":
             dndt, dhdt, dsdt, dcdt, dqdt, dzdt 
 
     start_time = time.time()
-    t_span = (0, 1)
+    t_span = (0, 0.5)
 
     k0 = [Na_si0, Na_se0, Na_sg0, Na_di0, Na_de0, Na_dg0, K_si0, K_se0, K_sg0, K_di0, K_de0, K_dg0, Cl_si0, Cl_se0, Cl_sg0, Cl_di0, Cl_de0, Cl_dg0, Ca_si0, Ca_se0, Ca_di0, Ca_de0, n0, h0, s0, c0, q0, z0]
 
