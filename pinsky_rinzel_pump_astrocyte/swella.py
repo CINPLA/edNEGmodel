@@ -169,12 +169,12 @@ class Swella(Buffy):
 #        ng = 18+99+7+k_res_g0
 
         # solute potentials OBS lagt til noen konstanter her
-        self.psi_si = self.R * self.T * (self.Na_si + self.K_si + self.Cl_si + self.Ca_si + self.k_res_si -  13.99)
-        self.psi_se = self.R * self.T * (self.Na_se + self.K_se + self.Cl_se + self.Ca_se + self.k_res_se - 266.9)
-        self.psi_sg = self.R * self.T * (self.Na_sg + self.K_sg + self.Cl_sg + self.k_res_sg - 14.0)
-        self.psi_di = self.R * self.T * (self.Na_di + self.K_di + self.Cl_di + self.Ca_di + self.k_res_di - 13.99)
-        self.psi_de = self.R * self.T * (self.Na_de + self.K_de + self.Cl_de + self.Ca_de + self.k_res_de - 266.9)
-        self.psi_dg = self.R * self.T * (self.Na_dg + self.K_dg + self.Cl_dg + self.k_res_dg - 14.0)
+        self.psi_si = self.R * self.T * (self.Na_si + self.K_si + self.Cl_si + self.Ca_si -  122.01)
+        self.psi_se = self.R * self.T * (self.Na_se + self.K_se + self.Cl_se + self.Ca_se - 287.55)
+        self.psi_sg = self.R * self.T * (self.Na_sg + self.K_sg + self.Cl_sg - 121.6)
+        self.psi_di = self.R * self.T * (self.Na_di + self.K_di + self.Cl_di + self.Ca_di - 122.01)
+        self.psi_de = self.R * self.T * (self.Na_de + self.K_de + self.Cl_de + self.Ca_de - 287.55)
+        self.psi_dg = self.R * self.T * (self.Na_dg + self.K_dg + self.Cl_dg - 121.6)
 
     def alpha_m(self, phi_sm):
         phi_1 = phi_sm*1e3 + 46.9
