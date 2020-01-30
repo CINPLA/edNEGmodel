@@ -61,7 +61,7 @@ def test_modules():
     q = 0.01
     z = 1.0
 
-    test_cell = Swella(279, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, K_se0/V_se0, K_sg0/V_sg0, K_de0/V_de0, K_dg0/V_dg0, Ca_si0/V_si0, Ca_di0/V_di0, n, h, s, c, q, z, V_si, V_se, V_sg, V_di, V_de, V_dg, c_res_si, c_res_se, c_res_sg, c_res_di, c_res_de, c_res_dg)
+    test_cell = Swella(279, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, K_se/V_se, K_sg/V_sg, K_de/V_de, K_dg/V_dg, Ca_si/V_si, Ca_di/V_di, n, h, s, c, q, z, V_si, V_se, V_sg, V_di, V_de, V_dg, c_res_si, c_res_se, c_res_sg, c_res_di, c_res_de, c_res_dg)
 
     assert round(test_cell.nernst_potential(1., 400., 20.), 4) == -0.0721
 
