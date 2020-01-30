@@ -1,4 +1,5 @@
 import pytest
+from scipy.integrate import solve_ivp
 from pinsky_rinzel_pump_astrocyte.swella import *
 
 def test_modules():
