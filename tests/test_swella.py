@@ -63,7 +63,7 @@ def test_modules():
 
     test_cell = Swella(279, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, K_se/V_se, K_sg/V_sg, K_de/V_de, K_dg/V_dg, Ca_si/V_si, Ca_di/V_di, n, h, s, c, q, z, V_si, V_se, V_sg, V_di, V_de, V_dg, c_res_si, c_res_se, c_res_sg, c_res_di, c_res_de, c_res_dg)
 
-    assert round(test_cell.nernst_potential(1., 400., 20.), 4) == -0.0721
+    assert round(test_cell.nernst_potential(1., 400., 20.), 4) == -0.072
 
     assert round(test_cell.conductivity_k(test_cell.D_Na, test_cell.Z_Na, 3.2, test_cell.cNa_si, test_cell.cNa_di), 4) == 0.0078
 
