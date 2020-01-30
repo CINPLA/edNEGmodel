@@ -7,7 +7,8 @@ class Swella():
         k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, \
         c0K_se, c0K_sg, c0K_de, c0K_dg, \
         c0Ca_si, c0Ca_di, n, h, s, c, q, z, \
-        V_si, V_se, V_sg, V_di, V_de, V_dg):
+        V_si, V_se, V_sg, V_di, V_de, V_dg, \
+        c_res_si, c_res_se, c_res_sg, c_res_di, c_res_de, c_res_dg):
 
         # temperature [K]
         self.T = T
@@ -73,12 +74,14 @@ class Swella():
         self.ck_res_di = k_res_di/V_di
         self.ck_res_de = k_res_de/V_de
         self.ck_res_dg = k_res_dg/V_dg
-        self.c0K_se = c0K_se           
-        self.c0K_sg = c0K_sg          
-        self.c0K_de = c0K_de     
-        self.c0K_dg = c0K_dg
-        self.c0Ca_si = c0Ca_si
-        self.c0Ca_di = c0Ca_di
+
+        # concentrations of static molecules without charge [mol * m**-3] 
+        self.c_res_si = c_res_si
+        self.c_res_se = c_res_se
+        self.c_res_sg = c_res_sg
+        self.c_res_di = c_res_di
+        self.c_res_de = c_res_de
+        self.c_res_dg = c_res_dg
 
         # 
         self.KNaI = 10
@@ -108,20 +111,13 @@ class Swella():
         self.A_dg = 616e-12               # [m**2]
         self.A_ig = self.alpha*self.A_sg  # [m**2]
         self.dx = 667e-6                  # [m]
-        self.V_si = V_si
-        self.V_se = V_se
-        self.V_sg = V_sg
-        self.V_di = V_di
-        self.V_de = V_de
-        self.V_dg = V_dg
+        self.V_si = V_si                  # [m**3]
+        self.V_se = V_se                  # [m**3]
+        self.V_sg = V_sg                  # [m**3]
+        self.V_di = V_di                  # [m**3]
+        self.V_de = V_de                  # [m**3]
+        self.V_dg = V_dg                  # [m**3]
  
-        # 
-        self.G_n = 7e-13 #7e-13 # [m**3/Pa/s]
-        self.G_g = 7e-13 #7e-13 # [m**3/Pa/s]
-
-        #
-        self.tau = 75.
-        
         # diffusion constants [m**2 s**-1]
         self.D_Na = 1.33e-9 # Halnes et al. 2013
         self.D_K = 1.96e-9  # Halnes et al. 2013 
@@ -160,18 +156,29 @@ class Swella():
         self.U_kcc2 = 7.00e-7
         self.U_nkcc1 = 2.33e-7
         self.rho_astro = 1.12e-6
+        self.tau = 75.
+        
+        # water permeabilities [m**3/Pa/s] 
+        self.G_n = 7e-13
+        self.G_g = 7e-13
 
-        # 
+        # initial values 
+        self.c0K_se = c0K_se           
+        self.c0K_sg = c0K_sg          
+        self.c0K_de = c0K_de     
+        self.c0K_dg = c0K_dg
+        self.c0Ca_si = c0Ca_si
+        self.c0Ca_di = c0Ca_di
         self.E0_K_sg = self.nernst_potential(self.Z_K, self.c0K_sg, self.c0K_se)
         self.E0_K_dg = self.nernst_potential(self.Z_K, self.c0K_dg, self.c0K_de)
 
         # solute potentials OBS lagt til noen konstanter her maa gjores til input
-        self.psi_si = self.R * self.T * (self.cNa_si + self.cK_si + self.cCl_si + self.cCa_si -  122.01)
-        self.psi_se = self.R * self.T * (self.cNa_se + self.cK_se + self.cCl_se + self.cCa_se - 287.55)
-        self.psi_sg = self.R * self.T * (self.cNa_sg + self.cK_sg + self.cCl_sg - 121.6)
-        self.psi_di = self.R * self.T * (self.cNa_di + self.cK_di + self.cCl_di + self.cCa_di - 122.01)
-        self.psi_de = self.R * self.T * (self.cNa_de + self.cK_de + self.cCl_de + self.cCa_de - 287.55)
-        self.psi_dg = self.R * self.T * (self.cNa_dg + self.cK_dg + self.cCl_dg - 121.6)
+        self.psi_si = self.R * self.T * (self.cNa_si + self.cK_si + self.cCl_si + self.cCa_si -  c_res_si)
+        self.psi_se = self.R * self.T * (self.cNa_se + self.cK_se + self.cCl_se + self.cCa_se - c_res_se)
+        self.psi_sg = self.R * self.T * (self.cNa_sg + self.cK_sg + self.cCl_sg - c_res_sg)
+        self.psi_di = self.R * self.T * (self.cNa_di + self.cK_di + self.cCl_di + self.cCa_di - c_res_di)
+        self.psi_de = self.R * self.T * (self.cNa_de + self.cK_de + self.cCl_de + self.cCa_de - c_res_de)
+        self.psi_dg = self.R * self.T * (self.cNa_dg + self.cK_dg + self.cCl_dg - c_res_dg)
 
     def alpha_m(self, phi_sm):
         phi_1 = phi_sm*1e3 + 46.9
@@ -490,37 +497,35 @@ class Swella():
         j_Ca_e = self.j_k_diff(self.D_Ca, self.lamda_e, self.cCa_se, self.cCa_de) \
             + self.j_k_drift(self.D_Ca, self.Z_Ca, self.lamda_e, self.cCa_se, self.cCa_de, phi_se, phi_de)
 
-        dNadt_si = -j_Na_msn*(self.A_sn) - j_Na_in*(self.A_in) 
-        dNadt_se = j_Na_msn*(self.A_sn) + j_Na_msg*(self.A_sg) - j_Na_e*self.A_e 
-        dNadt_sg = -j_Na_msg*(self.A_sg) - j_Na_ig*(self.A_ig)
-        dNadt_di = -j_Na_mdn*(self.A_dn) + j_Na_in*(self.A_in) 
-        dNadt_de = j_Na_mdn*(self.A_dn) + j_Na_mdg*(self.A_dg) + j_Na_e*self.A_e 
-        dNadt_dg = -j_Na_mdg*(self.A_dg) + j_Na_ig*(self.A_ig)
+        dNadt_si = -j_Na_msn*self.A_sn - j_Na_in*self.A_in 
+        dNadt_se = j_Na_msn*self.A_sn + j_Na_msg*self.A_sg - j_Na_e*self.A_e 
+        dNadt_sg = -j_Na_msg*self.A_sg - j_Na_ig*self.A_ig
+        dNadt_di = -j_Na_mdn*self.A_dn + j_Na_in*self.A_in 
+        dNadt_de = j_Na_mdn*self.A_dn + j_Na_mdg*self.A_dg + j_Na_e*self.A_e 
+        dNadt_dg = -j_Na_mdg*self.A_dg + j_Na_ig*self.A_ig
 
-        dKdt_si = -j_K_msn*(self.A_sn) - j_K_in*(self.A_in)
-        dKdt_se = j_K_msn*(self.A_sn) + j_K_msg*(self.A_sg) - j_K_e*(self.A_e)
-        dKdt_sg = -j_K_msg*(self.A_sg) - j_K_ig*(self.A_ig)
-        dKdt_di = -j_K_mdn*(self.A_dn) + j_K_in*(self.A_in)
-        dKdt_de = j_K_mdn*(self.A_dn) + j_K_mdg*(self.A_dg) + j_K_e*(self.A_e)
-        dKdt_dg = -j_K_mdg*(self.A_dg) + j_K_ig*(self.A_ig)
+        dKdt_si = -j_K_msn*self.A_sn - j_K_in*self.A_in
+        dKdt_se = j_K_msn*self.A_sn + j_K_msg*self.A_sg - j_K_e*self.A_e
+        dKdt_sg = -j_K_msg*self.A_sg - j_K_ig*self.A_ig
+        dKdt_di = -j_K_mdn*self.A_dn + j_K_in*self.A_in
+        dKdt_de = j_K_mdn*self.A_dn + j_K_mdg*self.A_dg + j_K_e*self.A_e
+        dKdt_dg = -j_K_mdg*self.A_dg + j_K_ig*self.A_ig
 
-        dCldt_si = -j_Cl_msn*(self.A_sn) - j_Cl_in*(self.A_in)
-        dCldt_se = j_Cl_msn*(self.A_sn) + j_Cl_msg*(self.A_sg) - j_Cl_e*(self.A_e)
-        dCldt_sg = -j_Cl_msg*(self.A_sg) - j_Cl_ig*(self.A_ig)
-        dCldt_di = -j_Cl_mdn*(self.A_dn) + j_Cl_in*(self.A_in)
-        dCldt_de = j_Cl_mdn*(self.A_dn) + j_Cl_mdg*(self.A_dg) + j_Cl_e*(self.A_e)
-        dCldt_dg = -j_Cl_mdg*(self.A_dg) + j_Cl_ig*(self.A_ig)
+        dCldt_si = -j_Cl_msn*self.A_sn - j_Cl_in*self.A_in
+        dCldt_se = j_Cl_msn*self.A_sn + j_Cl_msg*self.A_sg - j_Cl_e*self.A_e
+        dCldt_sg = -j_Cl_msg*self.A_sg - j_Cl_ig*self.A_ig
+        dCldt_di = -j_Cl_mdn*self.A_dn + j_Cl_in*self.A_in
+        dCldt_de = j_Cl_mdn*self.A_dn + j_Cl_mdg*self.A_dg + j_Cl_e*self.A_e
+        dCldt_dg = -j_Cl_mdg*self.A_dg + j_Cl_ig*self.A_ig
 
-        dCadt_si = - j_Ca_in*(self.A_in) - self.j_Ca_sn()*self.A_sn
-        dCadt_se = - j_Ca_e*(self.A_e) + self.j_Ca_sn()*self.A_sn
-        dCadt_di = j_Ca_in*(self.A_in) - j_Ca_mdn*(self.A_dn) 
-        dCadt_de = j_Ca_e*(self.A_e) + j_Ca_mdn*(self.A_dn) 
+        dCadt_si = - j_Ca_in*self.A_in - self.j_Ca_sn()*self.A_sn
+        dCadt_se = - j_Ca_e*self.A_e + self.j_Ca_sn()*self.A_sn
+        dCadt_di = j_Ca_in*self.A_in - j_Ca_mdn*(self.A_dn) 
+        dCadt_de = j_Ca_e*self.A_e + j_Ca_mdn*(self.A_dn) 
 
 
         return dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, \
             dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de
-        #return dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, \
-        #    dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de
 
     def dmdt(self):
         phi_si, phi_se, phi_sg, phi_di, phi_de, phi_dg, phi_msn, phi_mdn, phi_msg, phi_mdg  = self.membrane_potentials()
