@@ -2,9 +2,9 @@ import numpy as np
 
 class Swella():
 
-    def __init__(self, T, nNa_si, nNa_se, nNa_sg, nNa_di, nNa_de, nNa_dg, nK_si, nK_se, nK_sg, nK_di, nK_de, nK_dg, \
-        nCl_si, nCl_se, nCl_sg, nCl_di, nCl_de, nCl_dg, nCa_si, nCa_se, nCa_di, nCa_de, \
-        nk_res_si, nk_res_se, nk_res_sg, nk_res_di, nk_res_de, nk_res_dg, alpha, \
+    def __init__(self, T, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, \
+        Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, \
+        k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, \
         c0K_se, c0K_sg, c0K_de, c0K_dg, \
         c0Ca_si, c0Ca_di, n, h, s, c, q, z, \
         V_si, V_se, V_sg, V_di, V_de, V_dg):
@@ -13,66 +13,66 @@ class Swella():
         self.T = T
 
         # ions [mol]
-        self.nNa_si = nNa_si
-        self.nNa_se = nNa_se
-        self.nNa_sg = nNa_sg
-        self.nNa_di = nNa_di
-        self.nNa_de = nNa_de
-        self.nNa_dg = nNa_dg
-        self.nK_si = nK_si
-        self.nK_se = nK_se
-        self.nK_sg = nK_sg
-        self.nK_di = nK_di
-        self.nK_de = nK_de
-        self.nK_dg = nK_dg
-        self.nCl_si = nCl_si
-        self.nCl_se = nCl_se 
-        self.nCl_sg = nCl_sg 
-        self.nCl_di = nCl_di 
-        self.nCl_de = nCl_de
-        self.nCl_dg = nCl_dg
-        self.nCa_si = nCa_si
-        self.nCa_se = nCa_se 
-        self.nCa_di = nCa_di 
-        self.nCa_de = nCa_de
-        self.nk_res_si = nk_res_si
-        self.nk_res_se = nk_res_se
-        self.nk_res_sg = nk_res_sg
-        self.nk_res_di = nk_res_di
-        self.nk_res_de = nk_res_de
-        self.nk_res_dg = nk_res_dg
+        self.Na_si = Na_si
+        self.Na_se = Na_se
+        self.Na_sg = Na_sg
+        self.Na_di = Na_di
+        self.Na_de = Na_de
+        self.Na_dg = Na_dg
+        self.K_si = K_si
+        self.K_se = K_se
+        self.K_sg = K_sg
+        self.K_di = K_di
+        self.K_de = K_de
+        self.K_dg = K_dg
+        self.Cl_si = Cl_si
+        self.Cl_se = Cl_se 
+        self.Cl_sg = Cl_sg 
+        self.Cl_di = Cl_di 
+        self.Cl_de = Cl_de
+        self.Cl_dg = Cl_dg
+        self.Ca_si = Ca_si
+        self.Ca_se = Ca_se 
+        self.Ca_di = Ca_di 
+        self.Ca_de = Ca_de
+        self.k_res_si = k_res_si
+        self.k_res_se = k_res_se
+        self.k_res_sg = k_res_sg
+        self.k_res_di = k_res_di
+        self.k_res_de = k_res_de
+        self.k_res_dg = k_res_dg
         
         # ion concentraions [mol * m**-3]
-        self.cNa_si = nNa_si/V_si
-        self.cNa_se = nNa_se/V_se
-        self.cNa_sg = nNa_sg/V_sg
-        self.cNa_di = nNa_di/V_di
-        self.cNa_de = nNa_de/V_de
-        self.cNa_dg = nNa_dg/V_dg
-        self.cK_si = nK_si/V_si
-        self.cK_se = nK_se/V_se
-        self.cK_sg = nK_sg/V_sg
-        self.cK_di = nK_di/V_di
-        self.cK_de = nK_de/V_de
-        self.cK_dg = nK_dg/V_dg
-        self.cCl_si = nCl_si/V_si
-        self.cCl_se = nCl_se/V_se 
-        self.cCl_sg = nCl_sg/V_sg 
-        self.cCl_di = nCl_di/V_di 
-        self.cCl_de = nCl_de/V_de
-        self.cCl_dg = nCl_dg/V_dg
-        self.cCa_si = nCa_si/V_si
-        self.cCa_se = nCa_se/V_se 
-        self.cCa_di = nCa_di/V_di 
-        self.cCa_de = nCa_de/V_de
+        self.cNa_si = Na_si/V_si
+        self.cNa_se = Na_se/V_se
+        self.cNa_sg = Na_sg/V_sg
+        self.cNa_di = Na_di/V_di
+        self.cNa_de = Na_de/V_de
+        self.cNa_dg = Na_dg/V_dg
+        self.cK_si = K_si/V_si
+        self.cK_se = K_se/V_se
+        self.cK_sg = K_sg/V_sg
+        self.cK_di = K_di/V_di
+        self.cK_de = K_de/V_de
+        self.cK_dg = K_dg/V_dg
+        self.cCl_si = Cl_si/V_si
+        self.cCl_se = Cl_se/V_se 
+        self.cCl_sg = Cl_sg/V_sg 
+        self.cCl_di = Cl_di/V_di 
+        self.cCl_de = Cl_de/V_de
+        self.cCl_dg = Cl_dg/V_dg
+        self.cCa_si = Ca_si/V_si
+        self.cCa_se = Ca_se/V_se 
+        self.cCa_di = Ca_di/V_di 
+        self.cCa_de = Ca_de/V_de
         self.free_cCa_si = 0.01*self.cCa_si
         self.free_cCa_di = 0.01*self.cCa_di
-        self.ck_res_si = nk_res_si/V_si
-        self.ck_res_se = nk_res_se/V_se
-        self.ck_res_sg = nk_res_sg/V_sg
-        self.ck_res_di = nk_res_di/V_di
-        self.ck_res_de = nk_res_de/V_de
-        self.ck_res_dg = nk_res_dg/V_dg
+        self.ck_res_si = k_res_si/V_si
+        self.ck_res_se = k_res_se/V_se
+        self.ck_res_sg = k_res_sg/V_sg
+        self.ck_res_di = k_res_di/V_di
+        self.ck_res_de = k_res_de/V_de
+        self.ck_res_dg = k_res_dg/V_dg
         self.c0K_se = c0K_se           
         self.c0K_sg = c0K_sg          
         self.c0K_de = c0K_de     
@@ -490,35 +490,35 @@ class Swella():
         j_Ca_e = self.j_k_diff(self.D_Ca, self.lamda_e, self.cCa_se, self.cCa_de) \
             + self.j_k_drift(self.D_Ca, self.Z_Ca, self.lamda_e, self.cCa_se, self.cCa_de, phi_se, phi_de)
 
-        dnNadt_si = -j_Na_msn*(self.A_sn) - j_Na_in*(self.A_in) 
-        dnNadt_se = j_Na_msn*(self.A_sn) + j_Na_msg*(self.A_sg) - j_Na_e*self.A_e 
-        dnNadt_sg = -j_Na_msg*(self.A_sg) - j_Na_ig*(self.A_ig)
-        dnNadt_di = -j_Na_mdn*(self.A_dn) + j_Na_in*(self.A_in) 
-        dnNadt_de = j_Na_mdn*(self.A_dn) + j_Na_mdg*(self.A_dg) + j_Na_e*self.A_e 
-        dnNadt_dg = -j_Na_mdg*(self.A_dg) + j_Na_ig*(self.A_ig)
+        dNadt_si = -j_Na_msn*(self.A_sn) - j_Na_in*(self.A_in) 
+        dNadt_se = j_Na_msn*(self.A_sn) + j_Na_msg*(self.A_sg) - j_Na_e*self.A_e 
+        dNadt_sg = -j_Na_msg*(self.A_sg) - j_Na_ig*(self.A_ig)
+        dNadt_di = -j_Na_mdn*(self.A_dn) + j_Na_in*(self.A_in) 
+        dNadt_de = j_Na_mdn*(self.A_dn) + j_Na_mdg*(self.A_dg) + j_Na_e*self.A_e 
+        dNadt_dg = -j_Na_mdg*(self.A_dg) + j_Na_ig*(self.A_ig)
 
-        dnKdt_si = -j_K_msn*(self.A_sn) - j_K_in*(self.A_in)
-        dnKdt_se = j_K_msn*(self.A_sn) + j_K_msg*(self.A_sg) - j_K_e*(self.A_e)
-        dnKdt_sg = -j_K_msg*(self.A_sg) - j_K_ig*(self.A_ig)
-        dnKdt_di = -j_K_mdn*(self.A_dn) + j_K_in*(self.A_in)
-        dnKdt_de = j_K_mdn*(self.A_dn) + j_K_mdg*(self.A_dg) + j_K_e*(self.A_e)
-        dnKdt_dg = -j_K_mdg*(self.A_dg) + j_K_ig*(self.A_ig)
+        dKdt_si = -j_K_msn*(self.A_sn) - j_K_in*(self.A_in)
+        dKdt_se = j_K_msn*(self.A_sn) + j_K_msg*(self.A_sg) - j_K_e*(self.A_e)
+        dKdt_sg = -j_K_msg*(self.A_sg) - j_K_ig*(self.A_ig)
+        dKdt_di = -j_K_mdn*(self.A_dn) + j_K_in*(self.A_in)
+        dKdt_de = j_K_mdn*(self.A_dn) + j_K_mdg*(self.A_dg) + j_K_e*(self.A_e)
+        dKdt_dg = -j_K_mdg*(self.A_dg) + j_K_ig*(self.A_ig)
 
-        dnCldt_si = -j_Cl_msn*(self.A_sn) - j_Cl_in*(self.A_in)
-        dnCldt_se = j_Cl_msn*(self.A_sn) + j_Cl_msg*(self.A_sg) - j_Cl_e*(self.A_e)
-        dnCldt_sg = -j_Cl_msg*(self.A_sg) - j_Cl_ig*(self.A_ig)
-        dnCldt_di = -j_Cl_mdn*(self.A_dn) + j_Cl_in*(self.A_in)
-        dnCldt_de = j_Cl_mdn*(self.A_dn) + j_Cl_mdg*(self.A_dg) + j_Cl_e*(self.A_e)
-        dnCldt_dg = -j_Cl_mdg*(self.A_dg) + j_Cl_ig*(self.A_ig)
+        dCldt_si = -j_Cl_msn*(self.A_sn) - j_Cl_in*(self.A_in)
+        dCldt_se = j_Cl_msn*(self.A_sn) + j_Cl_msg*(self.A_sg) - j_Cl_e*(self.A_e)
+        dCldt_sg = -j_Cl_msg*(self.A_sg) - j_Cl_ig*(self.A_ig)
+        dCldt_di = -j_Cl_mdn*(self.A_dn) + j_Cl_in*(self.A_in)
+        dCldt_de = j_Cl_mdn*(self.A_dn) + j_Cl_mdg*(self.A_dg) + j_Cl_e*(self.A_e)
+        dCldt_dg = -j_Cl_mdg*(self.A_dg) + j_Cl_ig*(self.A_ig)
 
-        dnCadt_si = - j_Ca_in*(self.A_in) - self.j_Ca_sn()*self.A_sn
-        dnCadt_se = - j_Ca_e*(self.A_e) + self.j_Ca_sn()*self.A_sn
-        dnCadt_di = j_Ca_in*(self.A_in) - j_Ca_mdn*(self.A_dn) 
-        dnCadt_de = j_Ca_e*(self.A_e) + j_Ca_mdn*(self.A_dn) 
+        dCadt_si = - j_Ca_in*(self.A_in) - self.j_Ca_sn()*self.A_sn
+        dCadt_se = - j_Ca_e*(self.A_e) + self.j_Ca_sn()*self.A_sn
+        dCadt_di = j_Ca_in*(self.A_in) - j_Ca_mdn*(self.A_dn) 
+        dCadt_de = j_Ca_e*(self.A_e) + j_Ca_mdn*(self.A_dn) 
 
 
-        return dnNadt_si, dnNadt_se, dnNadt_sg, dnNadt_di, dnNadt_de, dnNadt_dg, dnKdt_si, dnKdt_se, dnKdt_sg, dnKdt_di, dnKdt_de, dnKdt_dg, \
-            dnCldt_si, dnCldt_se, dnCldt_sg, dnCldt_di, dnCldt_de, dnCldt_dg, dnCadt_si, dnCadt_se, dnCadt_di, dnCadt_de
+        return dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, \
+            dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de
         #return dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, \
         #    dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de
 
