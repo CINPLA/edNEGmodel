@@ -157,8 +157,8 @@ def test_charge_conservation():
         dVsidt, dVsedt, dVsgdt, dVdidt, dVdedt, dVdgdt = my_cell.dVdt()
 
         if t > 10 and t < 20:
-            dnKdt_si += I_stim / my_cell.F
-            dnKdt_se -= I_stim / my_cell.F
+            dKdt_si += I_stim / my_cell.F
+            dKdt_se -= I_stim / my_cell.F
 
         return dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, \
             dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de, \
