@@ -20,7 +20,7 @@ def test_modules():
     Cl_si = 115*V_si
     Cl_se = 138*V_se
     Cl_sg = 6*V_sg
-    Ca_si0 = 0.01*V_si
+    Ca_si = 0.01*V_si
     Ca_se = 1.1*V_se
 
     Na_di = 16*V_di
