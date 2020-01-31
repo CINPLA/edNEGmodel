@@ -375,12 +375,12 @@ class Swella():
         sigma = self.F**2 * D_k * Z_k**2 * (ck_d + ck_s) / (2 * self.R * self.T * tortuosity**2)
         return sigma
 
-    def total_charge(self, ck, ck_res, V):
-        Z_k = [self.Z_Na, self.Z_K, self.Z_Cl, self.Z_Ca]
-        q = 0.0
-        for i in range(0, 4):
-            q += Z_k[i]*ck[i]
-        q = self.F*(q + ck_res)*V
+    def total_charge(self, k, k_res):
+        Z_k = np.array([self.Z_Na, self.Z_K, self.Z_Cl, self.Z_Ca])
+        Z_k = Z_k.reshape(4,1)
+        k = k.transpose()
+        q = (k.dot(Z_k) + k_res)*self.F
+        q = q.transpose()[0]
         return q
 
     def nernst_potential(self, Z, ck_i, ck_e):
@@ -429,10 +429,10 @@ class Swella():
             + self.conductivity_k(self.D_Cl, self.Z_Cl, self.lamda_e, self.cCl_se, self.cCl_de) \
             + self.conductivity_k(self.D_Ca, self.Z_Ca, self.lamda_e, self.cCa_se, self.cCa_de)
 
-        q_di = self.total_charge([self.cNa_di, self.cK_di, self.cCl_di, self.cCa_di], self.ck_res_di, self.V_di)
-        q_dg = self.total_charge([self.cNa_dg, self.cK_dg, self.cCl_dg, 0], self.ck_res_dg, self.V_dg)
-        q_si = self.total_charge([self.cNa_si, self.cK_si, self.cCl_si, self.cCa_si], self.ck_res_si, self.V_si)
-        q_sg = self.total_charge([self.cNa_sg, self.cK_sg, self.cCl_sg, 0], self.ck_res_sg, self.V_sg)
+        q_di = self.total_charge(np.array([self.Na_di, self.K_di, self.Cl_di, self.Ca_di]), self.k_res_di)
+        q_dg = self.total_charge(np.array([self.Na_dg, self.K_dg, self.Cl_dg, 0]), self.k_res_dg)
+        q_si = self.total_charge(np.array([self.Na_si, self.K_si, self.Cl_si, self.Ca_si]), self.k_res_si)
+        q_sg = self.total_charge(np.array([self.Na_sg, self.K_sg, self.Cl_sg, 0]), self.k_res_sg)
 
         phi_di = q_di / (self.C_mdn * self.A_dn)
         phi_de = 0.

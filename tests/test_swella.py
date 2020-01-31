@@ -36,7 +36,6 @@ def test_modules():
     Ca_di = 0.01*V_di
     Ca_de = 1.1*V_de
 
-    res = -68e-3*3e-2*616e-12/9.648e4
     resi = -72e-3*3e-2*616e-12/9.648e4 
     resg = -83e-3*3e-2*616e-12/9.648e4 
     rese =  resi+resg
@@ -69,13 +68,10 @@ def test_modules():
     assert round(test_cell.conductivity_k(test_cell.D_Na, test_cell.Z_Na, 3.2, test_cell.cNa_si, test_cell.cNa_di), 4) == 0.0078
 
     assert test_cell.total_charge( \
-        [test_cell.cNa_si, test_cell.cK_si, test_cell.cCl_si, 0], 0, 1e-1) == -9648
-    
-    assert test_cell.total_charge( \
-        [10, 10, 20, 0], 0, 10) == 0 
+        [10, 10, 20, 0], 0) == 0 
 
     assert test_cell.total_charge( \
-        [10, 10, 10, 5], -20, 10) == 0 
+        [10, 10, 10, 5], -20) == 0 
 
 def test_charge_conservation():
     """Tests that no charge disappear.
@@ -115,7 +111,6 @@ def test_charge_conservation():
     Ca_di0 = 0.01*V_di0
     Ca_de0 = 1.1*V_de0
 
-    res = -68e-3*3e-2*616e-12/9.648e4
     resi = -72e-3*3e-2*616e-12/9.648e4 
     resg = -83e-3*3e-2*616e-12/9.648e4 
     rese =  resi+resg
@@ -164,7 +159,7 @@ def test_charge_conservation():
             dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de, \
             dndt, dhdt, dsdt, dcdt, dqdt, dzdt, dVsidt, dVsedt, dVsgdt, dVdidt, dVdedt, dVdgdt 
 
-    t_span = (0, 10)
+    t_span = (0, 0.5)
     k0 = [Na_si0, Na_se0, Na_sg0, Na_di0, Na_de0, Na_dg0, K_si0, K_se0, K_sg0, K_di0, K_de0, K_dg0, Cl_si0, Cl_se0, Cl_sg0, Cl_di0, Cl_de0, Cl_dg0, Ca_si0, Ca_se0, Ca_di0, Ca_de0, n0, h0, s0, c0, q0, z0, V_si0, V_se0, V_sg0, V_di0, V_de0, V_dg0]
     sol = solve_ivp(dkdt, t_span, k0, max_step=1e-4)
     
@@ -172,12 +167,12 @@ def test_charge_conservation():
     
     test_cell = Swella(279, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, K_se0/V_se0, K_sg0/V_sg0, K_de0/V_de0, K_dg0/V_dg0, Ca_si0/V_si0, Ca_di0/V_di0, n, h, s, c, q, z, V_si, V_se, V_sg, V_di, V_de, V_dg, c_res_si, c_res_se, c_res_sg, c_res_di, c_res_de, c_res_dg)
 
-    q_si = test_cell.total_charge([test_cell.cNa_si[-1], test_cell.cK_si[-1], test_cell.cCl_si[-1], test_cell.cCa_si[-1]], test_cell.ck_res_si, test_cell.V_si)
-    q_se = test_cell.total_charge([test_cell.cNa_se[-1], test_cell.cK_se[-1], test_cell.cCl_se[-1], test_cell.cCa_se[-1]], test_cell.ck_res_se, test_cell.V_se)        
-    q_sg = test_cell.total_charge([test_cell.cNa_sg[-1], test_cell.cK_sg[-1], test_cell.cCl_sg[-1], 0], test_cell.ck_res_sg, test_cell.V_sg)        
-    q_di = test_cell.total_charge([test_cell.cNa_di[-1], test_cell.cK_di[-1], test_cell.cCl_di[-1], test_cell.cCa_di[-1]], test_cell.ck_res_di, test_cell.V_di)
-    q_de = test_cell.total_charge([test_cell.cNa_de[-1], test_cell.cK_de[-1], test_cell.cCl_de[-1], test_cell.cCa_de[-1]], test_cell.ck_res_de, test_cell.V_de)
-    q_dg = test_cell.total_charge([test_cell.cNa_dg[-1], test_cell.cK_dg[-1], test_cell.cCl_dg[-1], 0], test_cell.ck_res_dg, test_cell.V_dg)
+    q_si = test_cell.total_charge([test_cell.Na_si[-1], test_cell.K_si[-1], test_cell.Cl_si[-1], test_cell.Ca_si[-1]], test_cell.k_res_si)
+    q_se = test_cell.total_charge([test_cell.Na_se[-1], test_cell.K_se[-1], test_cell.Cl_se[-1], test_cell.Ca_se[-1]], test_cell.k_res_se)        
+    q_sg = test_cell.total_charge([test_cell.Na_sg[-1], test_cell.K_sg[-1], test_cell.Cl_sg[-1], 0], test_cell.k_res_sg)        
+    q_di = test_cell.total_charge([test_cell.Na_di[-1], test_cell.K_di[-1], test_cell.Cl_di[-1], test_cell.Ca_di[-1]], test_cell.k_res_di)
+    q_de = test_cell.total_charge([test_cell.Na_de[-1], test_cell.K_de[-1], test_cell.Cl_de[-1], test_cell.Ca_de[-1]], test_cell.k_res_de)
+    q_dg = test_cell.total_charge([test_cell.Na_dg[-1], test_cell.K_dg[-1], test_cell.Cl_dg[-1], 0], test_cell.k_res_dg)
 
     total_q = abs(q_si + q_se + q_sg + q_di + q_de + q_dg)
 
@@ -221,7 +216,6 @@ def test_volume_conservation():
     Ca_di0 = 0.01*V_di0
     Ca_de0 = 1.1*V_de0
 
-    res = -68e-3*3e-2*616e-12/9.648e4
     resi = -72e-3*3e-2*616e-12/9.648e4 
     resg = -83e-3*3e-2*616e-12/9.648e4 
     rese =  resi+resg
@@ -278,8 +272,8 @@ def test_volume_conservation():
    
     V_s_tot0 = V_si0 + V_se0 + V_sg0
     V_d_tot0 = V_di0 + V_de0 + V_dg0
-    V_s_tot = V_si + V_se + V_sg
-    V_d_tot = V_di + V_de + V_dg
+    V_s_tot = V_si[-1] + V_se[-1] + V_sg[-1]
+    V_d_tot = V_di[-1] + V_de[-1] + V_dg[-1]
 
     assert abs(V_s_tot0 - V_s_tot) < EPS
     assert abs(V_d_tot0 - V_d_tot) < EPS
