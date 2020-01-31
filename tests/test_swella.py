@@ -156,7 +156,7 @@ def test_charge_conservation():
         dndt, dhdt, dsdt, dcdt, dqdt, dzdt = my_cell.dmdt()
         dVsidt, dVsedt, dVsgdt, dVdidt, dVdedt, dVdgdt = my_cell.dVdt()
 
-        if t > 10 and t < 20:
+        if t > 8 and t < 9:
             dKdt_si += I_stim / my_cell.F
             dKdt_se -= I_stim / my_cell.F
 
@@ -164,7 +164,7 @@ def test_charge_conservation():
             dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de, \
             dndt, dhdt, dsdt, dcdt, dqdt, dzdt, dVsidt, dVsedt, dVsgdt, dVdidt, dVdedt, dVdgdt 
 
-    t_span = (0, 30)
+    t_span = (0, 10)
     k0 = [Na_si0, Na_se0, Na_sg0, Na_di0, Na_de0, Na_dg0, K_si0, K_se0, K_sg0, K_di0, K_de0, K_dg0, Cl_si0, Cl_se0, Cl_sg0, Cl_di0, Cl_de0, Cl_dg0, Ca_si0, Ca_se0, Ca_di0, Ca_de0, n0, h0, s0, c0, q0, z0, V_si0, V_se0, V_sg0, V_di0, V_de0, V_dg0]
     sol = solve_ivp(dkdt, t_span, k0, max_step=1e-4)
     
@@ -262,7 +262,7 @@ def test_volume_conservation():
         dndt, dhdt, dsdt, dcdt, dqdt, dzdt = my_cell.dmdt()
         dVsidt, dVsedt, dVsgdt, dVdidt, dVdedt, dVdgdt = my_cell.dVdt()
 
-        if t > 10 and t < 20:
+        if t > 8 and t < 9:
             dKdt_si += I_stim / my_cell.F
             dKdt_se -= I_stim / my_cell.F
 
@@ -270,7 +270,7 @@ def test_volume_conservation():
             dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de, \
             dndt, dhdt, dsdt, dcdt, dqdt, dzdt, dVsidt, dVsedt, dVsgdt, dVdidt, dVdedt, dVdgdt 
 
-    t_span = (0, 30)
+    t_span = (0, 10)
     k0 = [Na_si0, Na_se0, Na_sg0, Na_di0, Na_de0, Na_dg0, K_si0, K_se0, K_sg0, K_di0, K_de0, K_dg0, Cl_si0, Cl_se0, Cl_sg0, Cl_di0, Cl_de0, Cl_dg0, Ca_si0, Ca_se0, Ca_di0, Ca_de0, n0, h0, s0, c0, q0, z0, V_si0, V_se0, V_sg0, V_di0, V_de0, V_dg0]
     sol = solve_ivp(dkdt, t_span, k0, max_step=1e-4)
     
