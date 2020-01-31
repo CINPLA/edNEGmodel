@@ -1,6 +1,7 @@
 import pytest
 from scipy.integrate import solve_ivp
 from pinsky_rinzel_pump_astrocyte.swella import *
+import numpy as np
 
 def test_modules():
 
@@ -67,11 +68,9 @@ def test_modules():
 
     assert round(test_cell.conductivity_k(test_cell.D_Na, test_cell.Z_Na, 3.2, test_cell.cNa_si, test_cell.cNa_di), 4) == 0.0078
 
-    assert test_cell.total_charge( \
-        [10, 10, 20, 0], 0) == 0 
+    assert test_cell.total_charge(np.array([10, 10, 20, 0]), 0) == 0 
 
-    assert test_cell.total_charge( \
-        [10, 10, 10, 5], -20) == 0 
+    assert test_cell.total_charge(np.array([10, 10, 10, 5]), -20) == 0 
 
 def test_charge_conservation():
     """Tests that no charge disappear.
@@ -167,12 +166,12 @@ def test_charge_conservation():
     
     test_cell = Swella(279, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, K_se0/V_se0, K_sg0/V_sg0, K_de0/V_de0, K_dg0/V_dg0, Ca_si0/V_si0, Ca_di0/V_di0, n, h, s, c, q, z, V_si, V_se, V_sg, V_di, V_de, V_dg, c_res_si, c_res_se, c_res_sg, c_res_di, c_res_de, c_res_dg)
 
-    q_si = test_cell.total_charge([test_cell.Na_si[-1], test_cell.K_si[-1], test_cell.Cl_si[-1], test_cell.Ca_si[-1]], test_cell.k_res_si)
-    q_se = test_cell.total_charge([test_cell.Na_se[-1], test_cell.K_se[-1], test_cell.Cl_se[-1], test_cell.Ca_se[-1]], test_cell.k_res_se)        
-    q_sg = test_cell.total_charge([test_cell.Na_sg[-1], test_cell.K_sg[-1], test_cell.Cl_sg[-1], 0], test_cell.k_res_sg)        
-    q_di = test_cell.total_charge([test_cell.Na_di[-1], test_cell.K_di[-1], test_cell.Cl_di[-1], test_cell.Ca_di[-1]], test_cell.k_res_di)
-    q_de = test_cell.total_charge([test_cell.Na_de[-1], test_cell.K_de[-1], test_cell.Cl_de[-1], test_cell.Ca_de[-1]], test_cell.k_res_de)
-    q_dg = test_cell.total_charge([test_cell.Na_dg[-1], test_cell.K_dg[-1], test_cell.Cl_dg[-1], 0], test_cell.k_res_dg)
+    q_si = test_cell.total_charge(np.array([test_cell.Na_si[-1], test_cell.K_si[-1], test_cell.Cl_si[-1], test_cell.Ca_si[-1]]), test_cell.k_res_si)
+    q_se = test_cell.total_charge(np.array([test_cell.Na_se[-1], test_cell.K_se[-1], test_cell.Cl_se[-1], test_cell.Ca_se[-1]]), test_cell.k_res_se)        
+    q_sg = test_cell.total_charge(np.array([test_cell.Na_sg[-1], test_cell.K_sg[-1], test_cell.Cl_sg[-1], 0]), test_cell.k_res_sg)        
+    q_di = test_cell.total_charge(np.array([test_cell.Na_di[-1], test_cell.K_di[-1], test_cell.Cl_di[-1], test_cell.Ca_di[-1]]), test_cell.k_res_di)
+    q_de = test_cell.total_charge(np.array([test_cell.Na_de[-1], test_cell.K_de[-1], test_cell.Cl_de[-1], test_cell.Ca_de[-1]]), test_cell.k_res_de)
+    q_dg = test_cell.total_charge(np.array([test_cell.Na_dg[-1], test_cell.K_dg[-1], test_cell.Cl_dg[-1], 0]), test_cell.k_res_dg)
 
     total_q = abs(q_si + q_se + q_sg + q_di + q_de + q_dg)
 
