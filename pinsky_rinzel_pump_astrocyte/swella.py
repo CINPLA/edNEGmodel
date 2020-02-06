@@ -159,8 +159,8 @@ class Swella():
         self.tau = 75.
         
         # water permeabilities [m**3/Pa/s] 
-        self.G_n = 7e-13
-        self.G_g = 7e-13
+        self.G_n = 2e-23    # Dijkstra et al. 2016
+        self.G_g = 5e-23    # Østby et al. 2009
 
         # initial values 
         self.c0K_se = c0K_se           
