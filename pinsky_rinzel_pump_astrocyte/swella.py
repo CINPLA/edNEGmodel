@@ -4,9 +4,9 @@ class Swella():
 
     def __init__(self, T, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, \
         Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, \
-        k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, \
-        c0K_se, c0K_sg, c0K_de, c0K_dg, \
-        c0Ca_si, c0Ca_di, n, h, s, c, q, z, \
+        X_si, X_se, X_sg, X_di, X_de, X_dg, alpha, \
+        cbK_se, cbK_sg, cbK_de, cbK_dg, \
+        cbCa_si, cbCa_di, n, h, s, c, q, z, \
         V_si, V_se, V_sg, V_di, V_de, V_dg, \
         c_res_si, c_res_se, c_res_sg, c_res_di, c_res_de, c_res_dg):
 
@@ -36,12 +36,12 @@ class Swella():
         self.Ca_se = Ca_se 
         self.Ca_di = Ca_di 
         self.Ca_de = Ca_de
-        self.k_res_si = k_res_si
-        self.k_res_se = k_res_se
-        self.k_res_sg = k_res_sg
-        self.k_res_di = k_res_di
-        self.k_res_de = k_res_de
-        self.k_res_dg = k_res_dg
+        self.X_si = X_si
+        self.X_se = X_se
+        self.X_sg = X_sg
+        self.X_di = X_di
+        self.X_de = X_de
+        self.X_dg = X_dg
         
         # ion concentraions [mol * m**-3]
         self.cNa_si = Na_si/V_si
@@ -68,12 +68,12 @@ class Swella():
         self.cCa_de = Ca_de/V_de
         self.free_cCa_si = 0.01*self.cCa_si
         self.free_cCa_di = 0.01*self.cCa_di
-        self.ck_res_si = k_res_si/V_si
-        self.ck_res_se = k_res_se/V_se
-        self.ck_res_sg = k_res_sg/V_sg
-        self.ck_res_di = k_res_di/V_di
-        self.ck_res_de = k_res_de/V_de
-        self.ck_res_dg = k_res_dg/V_dg
+        self.cX_si = X_si/V_si
+        self.cX_se = X_se/V_se
+        self.cX_sg = X_sg/V_sg
+        self.cX_di = X_di/V_di
+        self.cX_de = X_de/V_de
+        self.cX_dg = X_dg/V_dg
 
         # concentrations of static molecules without charge [mol * m**-3] 
         self.c_res_si = c_res_si
@@ -133,6 +133,7 @@ class Swella():
         self.Z_K = 1.
         self.Z_Cl = -1.
         self.Z_Ca = 2.
+        self.Z_X = -1.
 
         # constants
         self.F = 9.648e4    # [C * mol**-1]
@@ -163,14 +164,14 @@ class Swella():
         self.G_g = 5e-23    # Østby et al. 2009
 
         # initial values 
-        self.c0K_se = c0K_se           
-        self.c0K_sg = c0K_sg          
-        self.c0K_de = c0K_de     
-        self.c0K_dg = c0K_dg
-        self.c0Ca_si = c0Ca_si
-        self.c0Ca_di = c0Ca_di
-        self.E0_K_sg = self.nernst_potential(self.Z_K, self.c0K_sg, self.c0K_se)
-        self.E0_K_dg = self.nernst_potential(self.Z_K, self.c0K_dg, self.c0K_de)
+        self.n0K_se = cbK_se           
+        self.n0K_sg = cbK_sg          
+        self.n0K_de = cbK_de     
+        self.n0K_dg = cbK_dg
+        self.n0Ca_si = cbCa_si
+        self.n0Ca_di = cbCa_di
+        self.E0_K_sg = self.nernst_potential(self.Z_K, self.cbK_sg, self.cbK_se)
+        self.E0_K_dg = self.nernst_potential(self.Z_K, self.cbK_dg, self.cbK_de)
 
         # solute potentials OBS lagt til noen konstanter her maa gjores til input
         self.psi_si = self.R * self.T * (self.cNa_si + self.cK_si + self.cCl_si + self.cCa_si -  c_res_si)
@@ -283,7 +284,7 @@ class Swella():
             + 3*self.j_pump(self.cNa_si, self.cK_se) \
             + self.j_nkcc1(self.cNa_si, self.cNa_se, self.cK_si, self.cK_se, self.cCl_si, self.cCl_se) \
             + self.g_Na * self.m_inf(phi_sm)**2 * self.h * (phi_sm - E_Na_s) / (self.F*self.Z_Na) \
-            - 2*self.tau*(self.cCa_si - self.c0Ca_si)*self.V_si/self.A_sn
+            - 2*self.tau*(self.cCa_si - self.cbCa_si)*self.V_si/self.A_sn
         return j 
 
     def j_K_sn(self, phi_sm, E_K_s):
@@ -301,14 +302,14 @@ class Swella():
         return j
 
     def j_Ca_sn(self):
-        j =  self.tau * (self.cCa_si - self.c0Ca_si)*self.V_si/self.A_sn
+        j =  self.tau * (self.cCa_si - self.cbCa_si)*self.V_si/self.A_sn
         return j
 
     def j_Na_dn(self, phi_dm, E_Na_d):
         j = self.g_Na_leak*(phi_dm - E_Na_d) / (self.F*self.Z_Na) \
             + 3*self.j_pump(self.cNa_di, self.cK_de) \
             + self.j_nkcc1(self.cNa_di, self.cNa_de, self.cK_di, self.cK_de, self.cCl_di, self.cCl_de) \
-            - 2*self.tau*(self.cCa_di - self.c0Ca_di)*self.V_di/self.A_dn
+            - 2*self.tau*(self.cCa_di - self.cbCa_di)*self.V_di/self.A_dn
         return j
 
     def j_K_dn(self, phi_dm, E_K_d):
@@ -328,7 +329,7 @@ class Swella():
 
     def j_Ca_dn(self, phi_dm, E_Ca_d):
         j = self.g_Ca * self.s**2 * self.z * (phi_dm - E_Ca_d) / (self.F*self.Z_Ca) \
-            + self.tau*(self.cCa_di - self.c0Ca_di)*self.V_di/self.A_dn
+            + self.tau*(self.cCa_di - self.cbCa_di)*self.V_di/self.A_dn
         return j
 
     def j_Na_sg(self, phi_sm, E_Na_g):
@@ -338,7 +339,7 @@ class Swella():
 
     def j_K_sg(self, phi_sm, E_K_g):
         dphi = (phi_sm - E_K_g)*1000
-        f = np.sqrt(self.cK_se/self.c0K_se) * ((1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))) * ((1 + np.exp(-(118.6+self.E0_K_sg)/44.1))/(1+np.exp(-(118.6+phi_sm)/44.1)))
+        f = np.sqrt(self.cK_se/self.cbK_se) * ((1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))) * ((1 + np.exp(-(118.6+self.E0_K_sg)/44.1))/(1+np.exp(-(118.6+phi_sm)/44.1)))
         j = self.g_K_astro * f * (phi_sm - E_K_g) / self.F \
         - 2 * self.j_pump_astro(self.cNa_sg, self.cK_se)
         return j
@@ -354,7 +355,7 @@ class Swella():
 
     def j_K_dg(self, phi_dm, E_K_g):
         dphi = (phi_dm - E_K_g)*1000
-        f = np.sqrt(self.cK_de/self.c0K_de) * ((1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))) * ((1 + np.exp(-(118.6+self.E0_K_dg)/44.1))/(1+np.exp(-(118.6+phi_dm)/44.1)))
+        f = np.sqrt(self.cK_de/self.cbK_de) * ((1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))) * ((1 + np.exp(-(118.6+self.E0_K_dg)/44.1))/(1+np.exp(-(118.6+phi_dm)/44.1)))
         j = self.g_K_astro * f * (phi_dm - E_K_g) / self.F \
         - 2 * self.j_pump_astro(self.cNa_dg, self.cK_de)
         return j
@@ -375,12 +376,17 @@ class Swella():
         sigma = self.F**2 * D_k * Z_k**2 * (ck_d + ck_s) / (2 * self.R * self.T * tortuosity**2)
         return sigma
 
-    def total_charge(self, k, k_res):
-        Z_k = np.array([self.Z_Na, self.Z_K, self.Z_Cl, self.Z_Ca])
-        Z_k = Z_k.reshape(4,1)
-        k = k.transpose()
-        q = (k.dot(Z_k) + k_res)*self.F
-        q = q.transpose()[0]
+    def total_charge(self, k):
+#        Z_k = np.array([self.Z_Na, self.Z_K, self.Z_Cl, self.Z_Ca])
+#        Z_k = Z_k.reshape(4,1)
+#        k = k.transpose()
+#        q = (k.dot(Z_k) + X)*self.F
+#        q = q.transpose()[0]
+        Z_k = [self.Z_Na, self.Z_K, self.Z_Cl, self.Z_Ca, self.Z_X]
+        q = 0.0
+        for i in range(0, 5):
+            q += Z_k[i]*k[i]
+        q = self.F*q
         return q
 
     def nernst_potential(self, Z, ck_i, ck_e):
@@ -429,10 +435,10 @@ class Swella():
             + self.conductivity_k(self.D_Cl, self.Z_Cl, self.lamda_e, self.cCl_se, self.cCl_de) \
             + self.conductivity_k(self.D_Ca, self.Z_Ca, self.lamda_e, self.cCa_se, self.cCa_de)
 
-        q_di = self.total_charge(np.array([self.Na_di, self.K_di, self.Cl_di, self.Ca_di]), self.k_res_di)
-        q_dg = self.total_charge(np.array([self.Na_dg, self.K_dg, self.Cl_dg, 0]), self.k_res_dg)
-        q_si = self.total_charge(np.array([self.Na_si, self.K_si, self.Cl_si, self.Ca_si]), self.k_res_si)
-        q_sg = self.total_charge(np.array([self.Na_sg, self.K_sg, self.Cl_sg, 0]), self.k_res_sg)
+        q_di = self.total_charge(np.array([self.Na_di, self.K_di, self.Cl_di, self.Ca_di, self.X_di]))
+        q_dg = self.total_charge(np.array([self.Na_dg, self.K_dg, self.Cl_dg, 0, self.X_dg]))
+        q_si = self.total_charge(np.array([self.Na_si, self.K_si, self.Cl_si, self.Ca_si, self.X_si]))
+        q_sg = self.total_charge(np.array([self.Na_sg, self.K_sg, self.Cl_sg, 0, self.X_sg]))
 
         phi_di = q_di / (self.C_mdn * self.A_dn)
         phi_de = 0.
