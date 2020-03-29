@@ -68,9 +68,9 @@ def test_modules():
 
     assert round(test_cell.conductivity_k(test_cell.D_Na, test_cell.Z_Na, 3.2, test_cell.cNa_si, test_cell.cNa_di), 4) == 0.0078
 
-    assert test_cell.total_charge(np.array([10, 10, 20, 0]), 0) == 0 
+    assert test_cell.total_charge(np.array([10, 10, 20, 0, 0])) == 0 
 
-    assert test_cell.total_charge(np.array([10, 10, 10, 5]), -20) == 0 
+    assert test_cell.total_charge(np.array([10, 10, 10, 5, 20])) == 0 
 
 def test_charge_conservation():
     """Tests that no charge disappear.
