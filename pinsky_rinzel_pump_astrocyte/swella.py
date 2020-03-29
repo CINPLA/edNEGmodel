@@ -164,12 +164,12 @@ class Swella():
         self.G_g = 5e-23    # Østby et al. 2009
 
         # initial values 
-        self.n0K_se = cbK_se           
-        self.n0K_sg = cbK_sg          
-        self.n0K_de = cbK_de     
-        self.n0K_dg = cbK_dg
-        self.n0Ca_si = cbCa_si
-        self.n0Ca_di = cbCa_di
+        self.cbK_se = cbK_se           
+        self.cbK_sg = cbK_sg          
+        self.cbK_de = cbK_de     
+        self.cbK_dg = cbK_dg
+        self.cbCa_si = cbCa_si
+        self.cbCa_di = cbCa_di
         self.E0_K_sg = self.nernst_potential(self.Z_K, self.cbK_sg, self.cbK_se)
         self.E0_K_dg = self.nernst_potential(self.Z_K, self.cbK_dg, self.cbK_de)
 

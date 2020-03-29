@@ -41,12 +41,12 @@ def test_modules():
     resg = -83e-3*3e-2*616e-12/9.648e4 
     rese =  resi+resg
 
-    k_res_si = -Na_si - K_si + Cl_si - 2*Ca_si + resi
-    k_res_se = -Na_se - K_se + Cl_se - 2*Ca_se - rese
-    k_res_sg = -Na_sg - K_sg + Cl_sg + resg
-    k_res_di = -Na_di - K_di + Cl_di - 2*Ca_di + resi
-    k_res_de = -Na_de - K_de + Cl_de - 2*Ca_de - rese
-    k_res_dg = -Na_dg - K_dg + Cl_dg + resg
+    X_si = Na_si + K_si - Cl_si + 2*Ca_si - resi
+    X_se = Na_se + K_se - Cl_se + 2*Ca_se + rese
+    X_sg = Na_sg + K_sg - Cl_sg - resg
+    X_di = Na_di + K_di - Cl_di + 2*Ca_di - resi
+    X_de = Na_de + K_de - Cl_de + 2*Ca_de + rese
+    X_dg = Na_dg + K_dg - Cl_dg - resg
 
     c_res_si = 122.01
     c_res_se = 287.55
@@ -62,7 +62,7 @@ def test_modules():
     q = 0.01
     z = 1.0
 
-    test_cell = Swella(279, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, K_se/V_se, K_sg/V_sg, K_de/V_de, K_dg/V_dg, Ca_si/V_si, Ca_di/V_di, n, h, s, c, q, z, V_si, V_se, V_sg, V_di, V_de, V_dg, c_res_si, c_res_se, c_res_sg, c_res_di, c_res_de, c_res_dg)
+    test_cell = Swella(279, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, X_si, X_se, X_sg, X_di, X_de, X_dg, alpha, K_se/V_se, K_sg/V_sg, K_de/V_de, K_dg/V_dg, Ca_si/V_si, Ca_di/V_di, n, h, s, c, q, z, V_si, V_se, V_sg, V_di, V_de, V_dg, c_res_si, c_res_se, c_res_sg, c_res_di, c_res_de, c_res_dg)
 
     assert round(test_cell.nernst_potential(1., 400., 20.), 4) == -0.072
 
@@ -114,12 +114,12 @@ def test_charge_conservation():
     resg = -83e-3*3e-2*616e-12/9.648e4 
     rese =  resi+resg
 
-    k_res_si = -Na_si0 - K_si0 + Cl_si0 - 2*Ca_si0 + resi
-    k_res_se = -Na_se0 - K_se0 + Cl_se0 - 2*Ca_se0 - rese
-    k_res_sg = -Na_sg0 - K_sg0 + Cl_sg0 + resg
-    k_res_di = -Na_di0 - K_di0 + Cl_di0 - 2*Ca_di0 + resi
-    k_res_de = -Na_de0 - K_de0 + Cl_de0 - 2*Ca_de0 - rese
-    k_res_dg = -Na_dg0 - K_dg0 + Cl_dg0 + resg
+    X_si = Na_si0 + K_si0 - Cl_si0 + 2*Ca_si0 - resi
+    X_se = Na_se0 + K_se0 - Cl_se0 + 2*Ca_se0 + rese
+    X_sg = Na_sg0 + K_sg0 - Cl_sg0 - resg
+    X_di = Na_di0 + K_di0 - Cl_di0 + 2*Ca_di0 - resi
+    X_de = Na_de0 + K_de0 - Cl_de0 + 2*Ca_de0 + rese
+    X_dg = Na_dg0 + K_dg0 - Cl_dg0 - resg
 
     c_res_si = 122.01
     c_res_se = 287.55
@@ -141,7 +141,7 @@ def test_charge_conservation():
 
         Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, n, h, s, c, q, z, V_si, V_se, V_sg, V_di, V_de, V_dg = k
 
-        my_cell = Swella(279, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, K_se0/V_se0, K_sg0/V_sg0, K_de0/V_de0, K_dg0/V_dg0, Ca_si0/V_si0, Ca_di0/V_di0, n, h, s, c, q, z, V_si, V_se, V_sg, V_di, V_de, V_dg, c_res_si, c_res_se, c_res_sg, c_res_di, c_res_de, c_res_dg)
+        my_cell = Swella(279, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, X_si, X_se, X_sg, X_di, X_de, X_dg, alpha, K_se0/V_se0, K_sg0/V_sg0, K_de0/V_de0, K_dg0/V_dg0, Ca_si0/V_si0, Ca_di0/V_di0, n, h, s, c, q, z, V_si, V_se, V_sg, V_di, V_de, V_dg, c_res_si, c_res_se, c_res_sg, c_res_di, c_res_de, c_res_dg)
 
         my_cell.G_n = 7e-18
         my_cell.G_g = 7e-18
@@ -164,14 +164,14 @@ def test_charge_conservation():
     
     Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, n, h, s, c, q, z, V_si, V_se, V_sg, V_di, V_de, V_dg  = sol.y
     
-    test_cell = Swella(279, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, K_se0/V_se0, K_sg0/V_sg0, K_de0/V_de0, K_dg0/V_dg0, Ca_si0/V_si0, Ca_di0/V_di0, n, h, s, c, q, z, V_si, V_se, V_sg, V_di, V_de, V_dg, c_res_si, c_res_se, c_res_sg, c_res_di, c_res_de, c_res_dg)
+    test_cell = Swella(279, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, X_si, X_se, X_sg, X_di, X_de, X_dg, alpha, K_se0/V_se0, K_sg0/V_sg0, K_de0/V_de0, K_dg0/V_dg0, Ca_si0/V_si0, Ca_di0/V_di0, n, h, s, c, q, z, V_si, V_se, V_sg, V_di, V_de, V_dg, c_res_si, c_res_se, c_res_sg, c_res_di, c_res_de, c_res_dg)
 
-    q_si = test_cell.total_charge(np.array([test_cell.Na_si[-1], test_cell.K_si[-1], test_cell.Cl_si[-1], test_cell.Ca_si[-1]]), test_cell.k_res_si)
-    q_se = test_cell.total_charge(np.array([test_cell.Na_se[-1], test_cell.K_se[-1], test_cell.Cl_se[-1], test_cell.Ca_se[-1]]), test_cell.k_res_se)        
-    q_sg = test_cell.total_charge(np.array([test_cell.Na_sg[-1], test_cell.K_sg[-1], test_cell.Cl_sg[-1], 0]), test_cell.k_res_sg)        
-    q_di = test_cell.total_charge(np.array([test_cell.Na_di[-1], test_cell.K_di[-1], test_cell.Cl_di[-1], test_cell.Ca_di[-1]]), test_cell.k_res_di)
-    q_de = test_cell.total_charge(np.array([test_cell.Na_de[-1], test_cell.K_de[-1], test_cell.Cl_de[-1], test_cell.Ca_de[-1]]), test_cell.k_res_de)
-    q_dg = test_cell.total_charge(np.array([test_cell.Na_dg[-1], test_cell.K_dg[-1], test_cell.Cl_dg[-1], 0]), test_cell.k_res_dg)
+    q_si = test_cell.total_charge(np.array([test_cell.Na_si[-1], test_cell.K_si[-1], test_cell.Cl_si[-1], test_cell.Ca_si[-1], test_cell.X_si]))
+    q_se = test_cell.total_charge(np.array([test_cell.Na_se[-1], test_cell.K_se[-1], test_cell.Cl_se[-1], test_cell.Ca_se[-1], test_cell.X_se]))        
+    q_sg = test_cell.total_charge(np.array([test_cell.Na_sg[-1], test_cell.K_sg[-1], test_cell.Cl_sg[-1], 0, test_cell.X_sg]))        
+    q_di = test_cell.total_charge(np.array([test_cell.Na_di[-1], test_cell.K_di[-1], test_cell.Cl_di[-1], test_cell.Ca_di[-1], test_cell.X_di]))
+    q_de = test_cell.total_charge(np.array([test_cell.Na_de[-1], test_cell.K_de[-1], test_cell.Cl_de[-1], test_cell.Ca_de[-1], test_cell.X_de]))
+    q_dg = test_cell.total_charge(np.array([test_cell.Na_dg[-1], test_cell.K_dg[-1], test_cell.Cl_dg[-1], 0, test_cell.X_dg]))
 
     total_q = abs(q_si + q_se + q_sg + q_di + q_de + q_dg)
 
@@ -219,12 +219,12 @@ def test_volume_conservation():
     resg = -83e-3*3e-2*616e-12/9.648e4 
     rese =  resi+resg
 
-    k_res_si = -Na_si0 - K_si0 + Cl_si0 - 2*Ca_si0 + resi
-    k_res_se = -Na_se0 - K_se0 + Cl_se0 - 2*Ca_se0 - rese
-    k_res_sg = -Na_sg0 - K_sg0 + Cl_sg0 + resg
-    k_res_di = -Na_di0 - K_di0 + Cl_di0 - 2*Ca_di0 + resi
-    k_res_de = -Na_de0 - K_de0 + Cl_de0 - 2*Ca_de0 - rese
-    k_res_dg = -Na_dg0 - K_dg0 + Cl_dg0 + resg
+    X_si = Na_si0 + K_si0 - Cl_si0 + 2*Ca_si0 - resi
+    X_se = Na_se0 + K_se0 - Cl_se0 + 2*Ca_se0 + rese
+    X_sg = Na_sg0 + K_sg0 - Cl_sg0 - resg
+    X_di = Na_di0 + K_di0 - Cl_di0 + 2*Ca_di0 - resi
+    X_de = Na_de0 + K_de0 - Cl_de0 + 2*Ca_de0 + rese
+    X_dg = Na_dg0 + K_dg0 - Cl_dg0 - resg
 
     c_res_si = 122.01
     c_res_se = 287.55
@@ -246,10 +246,10 @@ def test_volume_conservation():
 
         Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, n, h, s, c, q, z, V_si, V_se, V_sg, V_di, V_de, V_dg = k
 
-        my_cell = Swella(279, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, k_res_si, k_res_se, k_res_sg, k_res_di, k_res_de, k_res_dg, alpha, K_se0/V_se0, K_sg0/V_sg0, K_de0/V_de0, K_dg0/V_dg0, Ca_si0/V_si0, Ca_di0/V_di0, n, h, s, c, q, z, V_si, V_se, V_sg, V_di, V_de, V_dg, c_res_si, c_res_se, c_res_sg, c_res_di, c_res_de, c_res_dg)
+        my_cell = Swella(279, Na_si, Na_se, Na_sg, Na_di, Na_de, Na_dg, K_si, K_se, K_sg, K_di, K_de, K_dg, Cl_si, Cl_se, Cl_sg, Cl_di, Cl_de, Cl_dg, Ca_si, Ca_se, Ca_di, Ca_de, X_si, X_se, X_sg, X_di, X_de, X_dg, alpha, K_se0/V_se0, K_sg0/V_sg0, K_de0/V_de0, K_dg0/V_dg0, Ca_si0/V_si0, Ca_di0/V_di0, n, h, s, c, q, z, V_si, V_se, V_sg, V_di, V_de, V_dg, c_res_si, c_res_se, c_res_sg, c_res_di, c_res_de, c_res_dg)
 
-        my_cell.G_n = 7e-18
-        my_cell.G_g = 7e-18
+        #my_cell.G_n = 7e-18
+        #my_cell.G_g = 7e-18
 
         dNadt_si, dNadt_se, dNadt_sg, dNadt_di, dNadt_de, dNadt_dg, dKdt_si, dKdt_se, dKdt_sg, dKdt_di, dKdt_de, dKdt_dg, dCldt_si, dCldt_se, dCldt_sg, dCldt_di, dCldt_de, dCldt_dg, dCadt_si, dCadt_se, dCadt_di, dCadt_de = my_cell.dkdt()
         dndt, dhdt, dsdt, dcdt, dqdt, dzdt = my_cell.dmdt()
