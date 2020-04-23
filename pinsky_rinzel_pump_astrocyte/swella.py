@@ -345,7 +345,7 @@ class Swella():
 
     def j_K_sg(self, phi_sm, E_K_g):
         dphi = (phi_sm - E_K_g)*1000
-        f = np.sqrt(self.cK_se/self.cbK_se) * ((1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))) * ((1 + np.exp(-(118.6+self.E0_K_sg)/44.1))/(1+np.exp(-(118.6+phi_sm)/44.1)))
+        f = np.sqrt(self.cK_se/self.cbK_se) * ((1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))) * ((1 + np.exp(-(118.6+self.E0_K_sg*1000)/44.1))/(1+np.exp(-(118.6+phi_sm*1000)/44.1)))
         j = self.g_K_astro * f * (phi_sm - E_K_g) / self.F \
             - 2 * self.j_pump_astro(self.cNa_sg, self.cK_se) \
             + self.j_nkcc1_astro(self.cNa_sg, self.cNa_se, self.cK_sg, self.cK_se, self.cCl_sg, self.cCl_se)
@@ -364,7 +364,7 @@ class Swella():
 
     def j_K_dg(self, phi_dm, E_K_g):
         dphi = (phi_dm - E_K_g)*1000
-        f = np.sqrt(self.cK_de/self.cbK_de) * ((1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))) * ((1 + np.exp(-(118.6+self.E0_K_dg)/44.1))/(1+np.exp(-(118.6+phi_dm)/44.1)))
+        f = np.sqrt(self.cK_de/self.cbK_de) * ((1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))) * ((1 + np.exp(-(118.6+self.E0_K_dg*1000)/44.1))/(1+np.exp(-(118.6+phi_dm*1000)/44.1)))
         j = self.g_K_astro * f * (phi_dm - E_K_g) / self.F \
             - 2 * self.j_pump_astro(self.cNa_dg, self.cK_de) \
             + self.j_nkcc1_astro(self.cNa_dg, self.cNa_de, self.cK_dg, self.cK_de, self.cCl_dg, self.cCl_de)
