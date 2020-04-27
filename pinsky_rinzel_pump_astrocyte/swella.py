@@ -158,7 +158,6 @@ class Swella():
         self.U_nkcc1 = 2.33e-7
         self.tau = 75.
         self.rho_astro = 1.12e-6
-        self.U_nkcc1_astro = 2.33e-7
         
         # water permeabilities [m**3/Pa/s] 
         self.G_n = 2e-23    # Dijkstra et al. 2016
@@ -280,10 +279,6 @@ class Swella():
         j = self.U_nkcc1 * (1 / (1 + np.exp(16 - cK_e))) * (np.log(cK_i*cCl_i/(cK_e*cCl_e)) + np.log(cNa_i*cCl_i/(cNa_e*cCl_e)))
         return j
 
-    def j_nkcc1_astro(self, cNa_i, cNa_e, cK_i, cK_e, cCl_i, cCl_e):
-        j = self.U_nkcc1_astro * (1 / (1 + np.exp(16 - cK_e))) * (np.log(cK_i*cCl_i/(cK_e*cCl_e)) + np.log(cNa_i*cCl_i/(cNa_e*cCl_e)))
-        return j
-
     def j_Na_sn(self, phi_sm, E_Na_s):
         j = self.g_Na_leak*(phi_sm - E_Na_s) / (self.F*self.Z_Na) \
             + 3*self.j_pump(self.cNa_si, self.cK_se) \
@@ -339,40 +334,34 @@ class Swella():
 
     def j_Na_sg(self, phi_sm, E_Na_g):
         j = self.g_Na_astro * (phi_sm - E_Na_g) / self.F \
-            + 3*self.j_pump_astro(self.cNa_sg, self.cK_se) \
-            + self.j_nkcc1_astro(self.cNa_sg, self.cNa_se, self.cK_sg, self.cK_se, self.cCl_sg, self.cCl_se)
+            + 3*self.j_pump_astro(self.cNa_sg, self.cK_se)
         return j
 
     def j_K_sg(self, phi_sm, E_K_g):
         dphi = (phi_sm - E_K_g)*1000
         f = np.sqrt(self.cK_se/self.cbK_se) * ((1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))) * ((1 + np.exp(-(118.6+self.E0_K_sg*1000)/44.1))/(1+np.exp(-(118.6+phi_sm*1000)/44.1)))
         j = self.g_K_astro * f * (phi_sm - E_K_g) / self.F \
-            - 2 * self.j_pump_astro(self.cNa_sg, self.cK_se) \
-            + self.j_nkcc1_astro(self.cNa_sg, self.cNa_se, self.cK_sg, self.cK_se, self.cCl_sg, self.cCl_se)
+            - 2 * self.j_pump_astro(self.cNa_sg, self.cK_se)
         return j
 
     def j_Cl_sg(self, phi_sm, E_Cl_g):
-        j = - self.g_Cl_astro * (phi_sm - E_Cl_g) / self.F \
-            + 2*self.j_nkcc1_astro(self.cNa_sg, self.cNa_se, self.cK_sg, self.cK_se, self.cCl_sg, self.cCl_se)
+        j = - self.g_Cl_astro * (phi_sm - E_Cl_g) / self.F
         return j
 
     def j_Na_dg(self, phi_dm, E_Na_g):
         j = self.g_Na_astro * (phi_dm - E_Na_g) / self.F \
-            + 3*self.j_pump_astro(self.cNa_dg, self.cK_de) \
-            + self.j_nkcc1_astro(self.cNa_dg, self.cNa_de, self.cK_dg, self.cK_de, self.cCl_dg, self.cCl_de)
+            + 3*self.j_pump_astro(self.cNa_dg, self.cK_de)
         return j
 
     def j_K_dg(self, phi_dm, E_K_g):
         dphi = (phi_dm - E_K_g)*1000
         f = np.sqrt(self.cK_de/self.cbK_de) * ((1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))) * ((1 + np.exp(-(118.6+self.E0_K_dg*1000)/44.1))/(1+np.exp(-(118.6+phi_dm*1000)/44.1)))
         j = self.g_K_astro * f * (phi_dm - E_K_g) / self.F \
-            - 2 * self.j_pump_astro(self.cNa_dg, self.cK_de) \
-            + self.j_nkcc1_astro(self.cNa_dg, self.cNa_de, self.cK_dg, self.cK_de, self.cCl_dg, self.cCl_de)
+            - 2 * self.j_pump_astro(self.cNa_dg, self.cK_de)
         return j
 
     def j_Cl_dg(self, phi_dm, E_Cl_g):
-        j = - self.g_Cl_astro * (phi_dm - E_Cl_g) / self.F \
-            + 2*self.j_nkcc1_astro(self.cNa_dg, self.cNa_de, self.cK_dg, self.cK_de, self.cCl_dg, self.cCl_de)
+        j = - self.g_Cl_astro * (phi_dm - E_Cl_g) / self.F
         return j
 
     def j_k_diff(self, D_k, tortuosity, ck_s, ck_d):
