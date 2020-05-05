@@ -145,7 +145,7 @@ class Swella():
         self.g_Cl_leak = 1.0   # Wei et al. 2014
         self.g_Na = 300.
         self.g_DR = 150.
-        self.g_Ca = 118.
+        self.g_Ca = 141.
         self.g_AHP = 8.
         self.g_C = 150.
         self.g_Na_astro = 1.     # Halnes et al
