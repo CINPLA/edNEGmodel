@@ -156,7 +156,7 @@ class Swella():
         self.rho = 1.87e-6
         self.U_kcc2 = 7.00e-7
         self.U_nkcc1 = 2.33e-7
-        self.tau = 75.
+        self.U_Cadec = 75.
         self.rho_astro = 1.12e-6
         
         # water permeabilities [m**3/Pa/s] 
@@ -284,7 +284,7 @@ class Swella():
             + 3*self.j_pump(self.cNa_si, self.cK_se) \
             + self.j_nkcc1(self.cNa_si, self.cNa_se, self.cK_si, self.cK_se, self.cCl_si, self.cCl_se) \
             + self.g_Na * self.m_inf(phi_sm)**2 * self.h * (phi_sm - E_Na_s) / (self.F*self.Z_Na) \
-            - 2*self.tau*(self.cCa_si - self.cbCa_si)*self.V_si/self.A_sn
+            - 2*self.U_Cadec*(self.cCa_si - self.cbCa_si)*self.V_si/self.A_sn
         return j 
 
     def j_K_sn(self, phi_sm, E_K_s):
@@ -302,14 +302,14 @@ class Swella():
         return j
 
     def j_Ca_sn(self):
-        j =  self.tau * (self.cCa_si - self.cbCa_si)*self.V_si/self.A_sn
+        j =  self.U_Cadec * (self.cCa_si - self.cbCa_si)*self.V_si/self.A_sn
         return j
 
     def j_Na_dn(self, phi_dm, E_Na_d):
         j = self.g_Na_leak*(phi_dm - E_Na_d) / (self.F*self.Z_Na) \
             + 3*self.j_pump(self.cNa_di, self.cK_de) \
             + self.j_nkcc1(self.cNa_di, self.cNa_de, self.cK_di, self.cK_de, self.cCl_di, self.cCl_de) \
-            - 2*self.tau*(self.cCa_di - self.cbCa_di)*self.V_di/self.A_dn
+            - 2*self.U_Cadec*(self.cCa_di - self.cbCa_di)*self.V_di/self.A_dn
         return j
 
     def j_K_dn(self, phi_dm, E_K_d):
@@ -329,7 +329,7 @@ class Swella():
 
     def j_Ca_dn(self, phi_dm, E_Ca_d):
         j = self.g_Ca * self.s**2 * self.z * (phi_dm - E_Ca_d) / (self.F*self.Z_Ca) \
-            + self.tau*(self.cCa_di - self.cbCa_di)*self.V_di/self.A_dn
+            + self.U_Cadec*(self.cCa_di - self.cbCa_di)*self.V_di/self.A_dn
         return j
 
     def j_Na_sg(self, phi_sm, E_Na_g):
