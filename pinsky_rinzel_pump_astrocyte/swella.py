@@ -362,7 +362,7 @@ class Swella():
         phi_m_mil = phi_dm*1000
         E0_K_mil = self.E0_K_dg*1000
         fact1 = (1 + np.exp(18.4/42.4))/(1 + np.exp((dphi + 18.5)/42.5))
-        fact2 = (1 + np.exp(-(118.6+E0_K_mil)/44.1))/(1+np.exp(-(118.6+phi_mil)/44.1))
+        fact2 = (1 + np.exp(-(118.6+E0_K_mil)/44.1))/(1+np.exp(-(118.6+phi_m_mil)/44.1))
         f = np.sqrt(self.cK_de/self.cbK_de) * fact1 * fact2 
         j = self.g_K_astro * f * (phi_dm - E_K_g) / self.F \
             - 2 * self.j_pump_astro(self.cNa_dg, self.cK_de)
