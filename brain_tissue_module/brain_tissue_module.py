@@ -456,7 +456,7 @@ class BrainTissueModule():
             + self.Z_Cl*self.j_k_diff(self.D_Cl, self.lamda_e, self.cCl_se, self.cCl_de) \
             + self.Z_Ca*self.j_k_diff(self.D_Ca, self.lamda_e, self.cCa_se, self.cCa_de))
 
-        sigma_i = self.conductivity_k(self.D_Na, self.Z_Na, self.lamda_i, self.cNa_sn, self.cNa_dn) \
+        sigma_n = self.conductivity_k(self.D_Na, self.Z_Na, self.lamda_i, self.cNa_sn, self.cNa_dn) \
             + self.conductivity_k(self.D_K, self.Z_K, self.lamda_i, self.cK_sn, self.cK_dn) \
             + self.conductivity_k(self.D_Cl, self.Z_Cl, self.lamda_i, self.cCl_sn, self.cCl_dn) \
             + self.conductivity_k(self.D_Ca, self.Z_Ca, self.lamda_i, self.free_cCa_sn, self.free_cCa_dn)
@@ -476,9 +476,9 @@ class BrainTissueModule():
         phi_dn = q_dn / (self.C_mdn * self.A_m)
         phi_de = 0.
         phi_dg = q_dg / (self.C_mdg * self.A_m)
-        phi_se = ( - self.dx * self.A_i * I_n_diff + self.A_i * sigma_i * phi_dn - self.A_i * sigma_i * q_sn / (self.C_msn * self.A_m) \
+        phi_se = ( - self.dx * self.A_i * I_n_diff + self.A_i * sigma_n * phi_dn - self.A_i * sigma_n * q_sn / (self.C_msn * self.A_m) \
             - self.dx * self.A_i * I_g_diff + self.A_i * sigma_g * phi_dg - self.A_i * sigma_g * q_sg / (self.C_msg * self.A_m) - self.dx * self.A_e * I_e_diff ) \
-            / ( self.A_e * sigma_e + self.A_i * sigma_i + self.A_i * sigma_g )
+            / ( self.A_e * sigma_e + self.A_i * sigma_n + self.A_i * sigma_g )
         phi_sn = q_sn / (self.C_msn * self.A_m) + phi_se
         phi_sg = q_sg / (self.C_msg * self.A_m) + phi_se
         phi_msn = phi_sn - phi_se
