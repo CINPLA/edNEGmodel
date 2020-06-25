@@ -215,12 +215,12 @@ class BrainTissueModule():
 
 
         # solute potentials [Pa]
-        self.psi_sn = self.R * self.T * (self.cNa_sn + self.cK_sn + self.cCl_sn + self.cCa_sn -  cM_sn)
-        self.psi_se = self.R * self.T * (self.cNa_se + self.cK_se + self.cCl_se + self.cCa_se - cM_se)
-        self.psi_sg = self.R * self.T * (self.cNa_sg + self.cK_sg + self.cCl_sg - cM_sg)
-        self.psi_dn = self.R * self.T * (self.cNa_dn + self.cK_dn + self.cCl_dn + self.cCa_dn - cM_dn)
-        self.psi_de = self.R * self.T * (self.cNa_de + self.cK_de + self.cCl_de + self.cCa_de - cM_de)
-        self.psi_dg = self.R * self.T * (self.cNa_dg + self.cK_dg + self.cCl_dg - cM_dg)
+        self.psi_sn = -self.R * self.T * (self.cNa_sn + self.cK_sn + self.cCl_sn + self.cCa_sn -  cM_sn)
+        self.psi_se = -self.R * self.T * (self.cNa_se + self.cK_se + self.cCl_se + self.cCa_se - cM_se)
+        self.psi_sg = -self.R * self.T * (self.cNa_sg + self.cK_sg + self.cCl_sg - cM_sg)
+        self.psi_dn = -self.R * self.T * (self.cNa_dn + self.cK_dn + self.cCl_dn + self.cCa_dn - cM_dn)
+        self.psi_de = -self.R * self.T * (self.cNa_de + self.cK_de + self.cCl_de + self.cCa_de - cM_de)
+        self.psi_dg = -self.R * self.T * (self.cNa_dg + self.cK_dg + self.cCl_dg - cM_dg)
 
     def alpha_m(self, phi_m):
         phi_1 = phi_m + 0.0469
@@ -579,10 +579,10 @@ class BrainTissueModule():
 
     def dVdt(self):
 
-        dVsidt = -self.G_n * (self.psi_se - self.psi_sn)
-        dVsgdt = -self.G_g * (self.psi_se - self.psi_sg)
-        dVdidt = -self.G_n * (self.psi_de - self.psi_dn)
-        dVdgdt = -self.G_g * (self.psi_de - self.psi_dg)
+        dVsidt = self.G_n * (self.psi_se - self.psi_sn)
+        dVsgdt = self.G_g * (self.psi_se - self.psi_sg)
+        dVdidt = self.G_n * (self.psi_de - self.psi_dn)
+        dVdgdt = self.G_g * (self.psi_de - self.psi_dg)
         dVsedt = - (dVsidt + dVsgdt)
         dVdedt = - (dVdidt + dVdgdt)
 
