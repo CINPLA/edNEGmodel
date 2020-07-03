@@ -2,8 +2,8 @@ from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 import numpy as np
 import time
-from brain_tissue_module.brain_tissue_module import *
-from solve_brain_tissue_module import solve_brain_tissue_module
+from edNEGmodel.edNEGmodel import *
+from solve_edNEGmodel import solve_edNEGmodel
 
 start_time = time.time()
 
@@ -13,7 +13,7 @@ t_dur = 30       # [s]
 stim_start = 10
 stim_end = 20
 
-sol, my_cell = solve_brain_tissue_module(t_dur, alpha, I_stim, stim_start, stim_end)
+sol, my_cell = solve_edNEGmodel(t_dur, alpha, I_stim, stim_start, stim_end)
 t = sol.t
 
 phi_sn, phi_se, phi_sg, phi_dn, phi_de, phi_dg, phi_msn, phi_mdn, phi_msg, phi_mdg = my_cell.membrane_potentials()

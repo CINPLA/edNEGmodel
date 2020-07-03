@@ -1,4 +1,4 @@
-# brain tissue module 
+# The edNEG model 
 
 [![Build Status](https://travis-ci.com/CINPLA/brain_tissue_module.svg?token=ysPymD2Us3kpyo2SF9i6&branch=master)](https://travis-ci.com/CINPLA/brain_tissue_module)
 

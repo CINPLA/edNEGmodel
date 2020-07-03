@@ -1,6 +1,6 @@
 import numpy as np
 
-class BrainTissueModule():
+class edNEGmodel():
     """ 
     An electrodiffusive Pinsky-Rinzel model with neuron-glia interactions and cellular swelling
     
