@@ -155,7 +155,7 @@ class edNEGmodel():
         self.alpha = alpha
         self.A_m = 616e-12                # [m**2] Saetra et al. 2020
         self.A_i = self.alpha*self.A_m    # [m**2] Saetra et al. 2020
-        self.A_e = self.A_i/2.            # [m**2] Saetra et al. 2020
+        self.A_e = 61.6e-12               # [m**2] 
         self.dx = 667e-6                  # [m] Saetra et al. 2020
         self.V_sn = V_sn                  # [m**3]
         self.V_se = V_se                  # [m**3]
@@ -188,7 +188,7 @@ class edNEGmodel():
         # conductances [S/m**2]
         self.g_Na_leak_n = 0.246
         self.g_K_leak_n = 0.245  
-        self.g_Cl_leak_n = 0.668
+        self.g_Cl_leak_n = 1.0     # Saetra et al. 2020
         self.g_Na = 300.           # Pinsky and Rinzel 1994
         self.g_DR = 150.           # Pinsky and Rinzel 1994
         self.g_Ca = 141.
