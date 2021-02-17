@@ -468,10 +468,10 @@ class edNEGmodel():
             + self.conductivity_k(self.D_Cl, self.Z_Cl, self.lamda_e, self.cCl_se, self.cCl_de) \
             + self.conductivity_k(self.D_Ca, self.Z_Ca, self.lamda_e, self.cCa_se, self.cCa_de)
 
-        q_dn = self.total_charge(np.array([self.Na_dn, self.K_dn, self.Cl_dn, self.Ca_dn, self.X_dn]))
-        q_dg = self.total_charge(np.array([self.Na_dg, self.K_dg, self.Cl_dg, 0, self.X_dg]))
-        q_sn = self.total_charge(np.array([self.Na_sn, self.K_sn, self.Cl_sn, self.Ca_sn, self.X_sn]))
-        q_sg = self.total_charge(np.array([self.Na_sg, self.K_sg, self.Cl_sg, 0, self.X_sg]))
+        q_dn = self.total_charge([self.Na_dn, self.K_dn, self.Cl_dn, self.Ca_dn, self.X_dn])
+        q_dg = self.total_charge([self.Na_dg, self.K_dg, self.Cl_dg, 0, self.X_dg])
+        q_sn = self.total_charge([self.Na_sn, self.K_sn, self.Cl_sn, self.Ca_sn, self.X_sn])
+        q_sg = self.total_charge([self.Na_sg, self.K_sg, self.Cl_sg, 0, self.X_sg])
 
         phi_dn = q_dn / (self.C_mdn * self.A_m)
         phi_de = 0.
