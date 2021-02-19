@@ -188,7 +188,7 @@ class edNEGmodel():
         # conductances [S/m**2]
         self.g_Na_leak_n = 0.246
         self.g_K_leak_n = 0.245  
-        self.g_Cl_leak_n = 1.0     # Saetra et al. 2020
+        self.g_Cl_leak_n = 1.0     # Wei et al. 2014
         self.g_Na = 300.           # Pinsky and Rinzel 1994
         self.g_DR = 150.           # Pinsky and Rinzel 1994
         self.g_Ca = 141.
@@ -200,7 +200,7 @@ class edNEGmodel():
         
         # exchanger strengths
         self.rho_n = 1.87e-6       # [mol/m**2/s] Wei et al. 2014
-        self.U_kcc2 = 7.00e-7      # [mol/m**2/s] Wei et al. 2014
+        self.U_kcc2 = 1.49e-7      # [mol/m**2/s] 
         self.U_nkcc1 = 2.33e-7     # [mol/m**2/s] Wei et al. 2014
         self.U_Cadec = 75.         # [1/s] Saetra et al. 2020
         self.rho_g = 1.12e-6       # [mol/m**2/s] Halnes et al. 2013 
