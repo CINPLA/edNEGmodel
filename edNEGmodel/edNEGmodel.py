@@ -191,7 +191,7 @@ class edNEGmodel():
         self.g_Cl_leak_n = 1.0     # Wei et al. 2014
         self.g_Na = 300.           # Pinsky and Rinzel 1994
         self.g_DR = 150.           # Pinsky and Rinzel 1994
-        self.g_Ca = 141.
+        self.g_Ca = 118.           # Saetra et al. 2020
         self.g_AHP = 8.            # Pinsky and Rinzel 1994
         self.g_C = 150.            # Pinsky and Rinzel 1994
         self.g_Na_leak_g = 1.      # Halnes et al. 2013
