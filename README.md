@@ -1,5 +1,5 @@
 
-[![Build Status](https://travis-ci.com/CINPLA/edNEGmodel.svg?token=ysPymD2Us3kpyo2SF9i6&branch=master)](https://travis-ci.com/CINPLA/brain_tissue_module)
+[![Build Status](https://travis-ci.com/CINPLA/edNEGmodel.svg?branch=master)](https://travis-ci.com/CINPLA/edNEGmodel)
 
 # edNEGmodel 
 
