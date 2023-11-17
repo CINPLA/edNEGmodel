@@ -27,5 +27,5 @@ To reproduce the results presented in Sætra et al. 2021, see
 ## Errata
 
 * Table 1 in Sætra et al. 2021 says that the extracellular cross-section area A<sub>e</sub> is 3.08e-11 m<sup>2</sup>. 
-However, the value used in our simulations is 6.16e-11 m</sup>2</sup>. 
+However, the value used in our simulations is 6.16e-11 m<sup>2</sup>. 
 Thanks to Eirill Hauge and Letizia Signorelli for making us aware of this error.
