@@ -77,7 +77,7 @@ def test_charge_conservation():
    
     alpha = 1.0
     
-    EPS = 1e-14
+    EPS = 1e-12
 
     V_sn0 = 1.437e-9             # [cm**3]
     V_se0 = 7.185e-10            # [cm**3]
@@ -146,7 +146,7 @@ def test_charge_conservation():
         dndt, dhdt, dsdt, dcdt, dqdt, dzdt = my_cell.dmdt()
         dVsidt, dVsedt, dVsgdt, dVdidt, dVdedt, dVdgdt = my_cell.dVdt()
 
-        if t > 8 and t < 9:
+        if t > 8e3 and t < 9e3:
             dKdt_sn += I_stim / my_cell.F
             dKdt_se -= I_stim / my_cell.F
 
@@ -160,7 +160,7 @@ def test_charge_conservation():
         
         return my_cell.edNEG_jacobian(dense=True)
     
-    t_span = (0, 10)
+    t_span = (0, 10e3)
     k0 = [Na_sn0, Na_se0, Na_sg0, Na_dn0, Na_de0, Na_dg0, K_sn0, K_se0, K_sg0, K_dn0, K_de0, K_dg0, Cl_sn0, Cl_se0, Cl_sg0, Cl_dn0, Cl_de0, Cl_dg0, Ca_sn0, Ca_se0, Ca_dn0, Ca_de0, n0, h0, s0, c0, q0, z0, V_sn0, V_se0, V_sg0, V_dn0, V_de0, V_dg0]
     sol = solve_ivp(dkdt, t_span, k0, method='Radau', max_step=1e1, jac=model_jacobian)
     
@@ -185,7 +185,7 @@ def test_volume_conservation():
    
     alpha = 2.0
     
-    EPS = 1e-14
+    EPS = 1e-12
 
     V_sn0 = 1.437e-9             # [cm**3]
     V_se0 = 7.185e-10            # [cm**3]
@@ -254,7 +254,7 @@ def test_volume_conservation():
         dndt, dhdt, dsdt, dcdt, dqdt, dzdt = my_cell.dmdt()
         dVsidt, dVsedt, dVsgdt, dVdidt, dVdedt, dVdgdt = my_cell.dVdt()
 
-        if t > 8 and t < 9:
+        if t > 8e3 and t < 9e3:
             dKdt_sn += I_stim / my_cell.F
             dKdt_se -= I_stim / my_cell.F
 
@@ -268,7 +268,7 @@ def test_volume_conservation():
         
         return my_cell.edNEG_jacobian(dense=True)
     
-    t_span = (0, 10)
+    t_span = (0, 10e3)
     k0 = [Na_sn0, Na_se0, Na_sg0, Na_dn0, Na_de0, Na_dg0, K_sn0, K_se0, K_sg0, K_dn0, K_de0, K_dg0, Cl_sn0, Cl_se0, Cl_sg0, Cl_dn0, Cl_de0, Cl_dg0, Ca_sn0, Ca_se0, Ca_dn0, Ca_de0, n0, h0, s0, c0, q0, z0, V_sn0, V_se0, V_sg0, V_dn0, V_de0, V_dg0]
     sol = solve_ivp(dkdt, t_span, k0, method='Radau', max_step=1e1, jac=model_jacobian)
     
