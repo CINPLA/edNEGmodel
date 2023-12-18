@@ -4,7 +4,7 @@ from scipy.sparse import csr_matrix
 class edNEGmodel():
     """ 
     An electrodiffusive Pinsky-Rinzel model with neuron-glia interactions and cellular swelling
-    with units rescaled
+    with units rescaled and parameters groups uncertain
     
     Methods
     -------
@@ -55,7 +55,7 @@ class edNEGmodel():
         cbK_se, cbK_sg, cbK_de, cbK_dg, \
         cbCa_sn, cbCa_dn, n, h, s, c, q, z, \
         V_sn, V_se, V_sg, V_dn, V_de, V_dg, \
-        cM_sn, cM_se, cM_sg, cM_dn, cM_de, cM_dg):
+        cM_sn, cM_se, cM_sg, cM_dn, cM_de, cM_dg, params):
 
         # temperature [K]
         self.T = T
@@ -190,31 +190,76 @@ class edNEGmodel():
         self.F = 96480    # [nC/nmol]
         self.R = 8314      # [pJ/nmol/K] 
 
-        # conductances [mS/cm**2]
-        self.g_Na_leak_n = 0.0246
-        self.g_K_leak_n = 0.0245  
-        self.g_Cl_leak_n = 0.1     # Wei et al. 2014
-        self.g_Na = 30.           # Pinsky and Rinzel 1994
-        self.g_DR = 15.           # Pinsky and Rinzel 1994
-        self.g_Ca = 11.8           # Saetra et al. 2020
-        self.g_AHP = .8            # Pinsky and Rinzel 1994
-        self.g_C = 15.            # Pinsky and Rinzel 1994
-        self.g_Na_leak_g = .1      # Halnes et al. 2013
-        self.g_K_IR = 1.696        # Halnes et al. 2013
-        self.g_Cl_leak_g = 0.05     # Halnes et al. 2013
+        ########################
+        # Uncertain parameters #
+        ########################
+
+        # All selected uncertain parameters
+        if len(params) == 16 :
+            self.g_Na_leak_n = params[0]
+            self.g_K_leak_n = params[1]  
+            self.g_Cl_leak_n = params[2]        
+            self.g_Na = params[3]               
+            self.g_DR = params[4]               
+            self.g_Ca = params[5]               
+            self.g_AHP = params[6]              
+            self.g_C = params[7]                
+            self.g_Na_leak_g = params[8]        
+            self.g_K_IR = params[9]             
+            self.g_Cl_leak_g = params[10]       
+            
+            # exchanger strengths
+            self.rho_n = params[11]             
+            self.U_kcc2 = params[12]             
+            self.U_nkcc1 = params[13]           
+            self.U_Cadec = params[14]           
+            self.rho_g = params[15]             
         
-        # exchanger strengths
-        self.rho_n = 1.87e-4        # [nmol/cm**2/ms] Wei et al. 2014
-        self.U_kcc2 = 1.49e-5      # [nmol/cm**2/ms] 
-        self.U_nkcc1 = 2.33e-5     # [nmol/cm**2/ms] Wei et al. 2014
-        self.U_Cadec = 0.075         # [1/ms] Saetra et al. 2020
-        self.rho_g = 1.12e-4       # [nmol/cm**2/ms] Halnes et al. 2013 
+        # Only uncertain parameters affecting the dynamical steady state
+        elif len(params) == 5 :
+            self.g_Na = params[0]               
+            self.g_DR = params[1]               
+            self.g_Ca = params[2]               
+            self.g_AHP = params[3]              
+            self.g_C = params[4]                
+
+            self.g_Na_leak_n = 0.0246
+            self.g_K_leak_n = 0.0245
+            self.g_Cl_leak_n = 0.1  
+            self.g_Na_leak_g = .1    
+            self.g_K_IR = 1.696     
+            self.g_Cl_leak_g =  0.05     
+            self.rho_n = 1.87e-4      
+            self.U_kcc2 = 1.49e-5    
+            self.U_nkcc1 = 2.33e-5 
+            self.U_Cadec = 0.075       
+            self.rho_g = 1.12e-4
+
+        # Only uncertain parameters affecting the resting
+        if len(params) == 11 :
+            self.g_Na_leak_n = params[0]
+            self.g_K_leak_n = params[1]  
+            self.g_Cl_leak_n = params[2]        
+            self.g_Na_leak_g = params[3]        
+            self.g_K_IR = params[4]             
+            self.g_Cl_leak_g = params[5]        
+            self.rho_n = params[6]              
+            self.U_kcc2 = params[7]              
+            self.U_nkcc1 = params[8]            
+            self.U_Cadec = params[9]            
+            self.rho_g = params[10]             
+
+            self.g_Na = 30.         
+            self.g_DR = 15.           
+            self.g_Ca = 11.8          
+            self.g_AHP = .8         
+            self.g_C = 15. 
         
         # water permeabilities [cm**3/uPa/ms] 
         self.G_n = 2e-26    # Dijkstra et al. 2016
         self.G_g = 5e-26    # Oestby et al. 2009
         
-        # baseline reversal potentiteals [mV]
+        # baseline reversal potentials [mV]
         self.bE_K_sg = self.nernst_potential(self.Z_K, self.cbK_sg, self.cbK_se)
         self.bE_K_dg = self.nernst_potential(self.Z_K, self.cbK_dg, self.cbK_de)
 
