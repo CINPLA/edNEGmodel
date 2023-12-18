@@ -4,4 +4,4 @@ from setuptools import find_packages
 setup(
     name="edNEGmodel",
     packages=find_packages(),
-    version="0.1")
+    version="v2.0.0")
