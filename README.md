@@ -21,9 +21,9 @@ The code was developed for Python 3.6.
 ## Run simulations
 
 * The simulations folder includes example code showing how to run simulations. 
-* To reproduce the results presented in Sætra et al. 2021, see 
+* To reproduce the results presented in Sætra et al. (2021) PLoS Computational Biology, see 
 [https://github.com/CINPLA/edNEGmodel_analysis](https://github.com/CINPLA/edNEGmodel_analysis).
-* To reproduce the results presented in Signorelli et al. 2024 (in preparation), see 
+* To reproduce the results presented in Signorelli et al. (2024) PLoS ONE, see 
 [https://github.com/letiziasignorelli/edNEGmodel_UQSA](https://github.com/letiziasignorelli/edNEGmodel_UQSA).
 
 ## Errata
