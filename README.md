@@ -1,4 +1,4 @@
-[![Build Status](https://app.travis-ci.com/CINPLA/edNEGmodel.svg?branch=master)](https://app.travis-ci.com/CINPLA/edNEGmodel)
+[![Build Status](https://app.travis-ci.com/CINPLA/edNEGmodel.svg?branch=master)](https://app.travis-ci.com/CINPLA/edNEGmodel) [![DOI](https://zenodo.org/badge/222712201.svg)](https://zenodo.org/doi/10.5281/zenodo.10775264)
 
 # edNEGmodel 
 
